@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "extends": ["smooth", "smooth/project"],
+  "rules": {
+    "react/no-unescaped-entities": "off",
+    "react/forbid-prop-types": "off",
+    "import/no-cycle": "off"
+  }
+}
