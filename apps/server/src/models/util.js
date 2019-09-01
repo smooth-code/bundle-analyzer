@@ -42,6 +42,10 @@ export class BaseModel extends Model {
   // http://vincit.github.io/objection.js/#defaulteageralgorithm
   static defaultEagerAlgorithm = Model.JoinEagerAlgorithm
 
+  static get useLimitInFirst() {
+    return true
+  }
+
   $beforeInsert() {
     if (!this.createdAt) {
       this.createdAt = new Date().toISOString()

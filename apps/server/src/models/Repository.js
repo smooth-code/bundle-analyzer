@@ -103,7 +103,6 @@ export class Repository extends BaseModel {
 
     const userRepositoryRight = await UserRepositoryRight.query()
       .where({ userId: user.id, repositoryId: this.id })
-      .limit(1)
       .first()
 
     return Boolean(userRepositoryRight)

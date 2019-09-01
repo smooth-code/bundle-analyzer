@@ -5,9 +5,9 @@ import config from '../config'
 import { logger } from '../modules/util'
 import { addTeardown } from '../modules/teardown'
 import * as services from '../services'
-import app from '../app'
+import api from '../api'
 
-const server = http.createServer(app)
+const server = http.createServer(api)
 
 server.listen(config.get('server.port'), err => {
   if (err) {

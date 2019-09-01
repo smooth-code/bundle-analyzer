@@ -95,6 +95,20 @@ exports.up = knex =>
         .notNullable()
         .index()
     })
+    .createTable('bundle_infos', table => {
+      table.bigincrements('id').primary()
+      table.timestamps(false, true)
+      table.bigInteger('repository_id').index()
+      table.foreign('repository_id').references('repositories.id')
+      table
+        .string('branch')
+        .notNullable()
+        .index()
+      table
+        .string('commit')
+        .notNullable()
+        .index()
+    })
 
 exports.down = knex =>
   knex.schema
@@ -102,6 +116,7 @@ exports.down = knex =>
     .dropTableIfExists('user_repository_rights')
     .dropTableIfExists('repositories')
     .dropTableIfExists('organizations')
-    .dropTableIfExists('users')
     .dropTableIfExists('synchronizations')
+    .dropTableIfExists('users')
     .dropTableIfExists('installations')
+    .dropTableIfExists('bundle_infos')

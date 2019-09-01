@@ -1,29 +1,20 @@
-import express from 'express'
+import { Router } from 'express'
 import axios from 'axios'
 import asyncHandler from 'express-async-handler'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import WebhooksApi from '@octokit/webhooks'
 import Octokit from '@octokit/rest'
-import { User } from './models'
-import config from './config'
-import { handleGitHubEvents } from './modules/github'
-import { synchronizeFromUserId } from './jobs/synchronize'
+import { User } from '../models'
+import config from '../config'
+import { synchronizeFromUserId } from '../jobs/synchronize'
 
-const webhooks = new WebhooksApi({
-  secret: process.env.GITHUB_WEBHOOK_SECRET,
-  path: '/event-handler',
-})
+const router = new Router()
 
-webhooks.on('*', handleGitHubEvents)
+const corsOptions = {
+  origin: ['https://localhost:3000'],
+}
 
-const app = express()
-
-app.use(webhooks.middleware)
-
-app.use(cors())
-
-app.use(bodyParser.json())
+router.use(cors(corsOptions))
 
 function getDataFromProfile(profile) {
   return {
@@ -57,8 +48,9 @@ async function registerUserFromGitHub(accessToken) {
   await synchronizeFromUserId(user.id)
 }
 
-app.post(
+router.post(
   '/auth/github',
+  bodyParser.json(),
   asyncHandler(async (req, res) => {
     const result = await axios.post(
       'https://github.com/login/oauth/access_token',
@@ -85,4 +77,4 @@ app.post(
   }),
 )
 
-export default app
+export default router

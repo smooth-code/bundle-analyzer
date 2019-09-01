@@ -58,6 +58,20 @@ const config = convict({
       env: 'CLOUDAMQP_URL',
     },
   },
+  s3: {
+    accessKeyId: {
+      doc: 'AWS S3 access key id',
+      format: String,
+      default: '',
+      env: 'S3_ACCESS_KEY',
+    },
+    secretAccessKey: {
+      doc: 'AWS S3 secret access key',
+      format: String,
+      default: '',
+      env: 'S3_SECRET_KEY',
+    },
+  },
   github: {
     appId: {
       doc: 'App ID',

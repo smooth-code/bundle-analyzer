@@ -5,7 +5,6 @@ import { synchronizeFromInstallationId } from '../../jobs/synchronize'
 async function createOrUpdateInstallation(payload) {
   let installation = await Installation.query()
     .where({ githubId: payload.githubId })
-    .limit(1)
     .first()
 
   if (installation) {

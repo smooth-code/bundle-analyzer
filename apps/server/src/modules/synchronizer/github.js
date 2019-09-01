@@ -163,7 +163,6 @@ export class GitHubSynchronizer {
     const data = { githubId: githubUser.id, login: githubUser.login }
     let user = await User.query()
       .where({ githubId: githubUser.id })
-      .limit(1)
       .first()
 
     if (user) {
