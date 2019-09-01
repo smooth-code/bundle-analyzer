@@ -1,0 +1,20 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:11-alpine
+    ports:
+      - '5432:5432' # Expose the port in development so we can connect to it from the a SQL client.
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  rabbitmq:
+    # Last time I have checked, production is running 3.5.8
+    image: rabbitmq:3-alpine
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    volumes:
+      - './rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins'
+
+volumes:
+  pg_data:
+  redis_data:

@@ -3,11 +3,43 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev:web": "nodemon src/workers/web.js",
+    "dev:synchronize": "nodemon src/workers/synchronize.js",
+    "db:check-structure": "knex-scripts check-structure",
+    "db:create": "yarn knex-scripts create",
+    "db:drop": "yarn knex-scripts drop",
+    "db:dump": "yarn db:migrate && yarn knex-scripts dump",
+    "db:load": "yarn knex-scripts load",
+    "db:seed": "yarn knex seed:run",
+    "db:truncate": "yarn knex-scripts truncate",
+    "db:migrate": "yarn knex migrate:latest",
+    "db:rollback": "yarn knex migrate:rollback",
+    "db:reset": "yarn db:drop && yarn db:create && yarn db:load && yarn db:seed",
+    "knex": "babel-node ./node_modules/.bin/knex",
+    "knex-scripts": "babel-node ./node_modules/.bin/knex-scripts"
   },
   "dependencies": {
+    "@octokit/app": "^4.1.0",
+    "@octokit/rest": "^16.28.7",
     "@octokit/webhooks": "^6.2.2",
+    "@sentry/node": "^5.6.2",
+    "amqplib": "^0.5.5",
+    "axios": "^0.19.0",
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "chalk": "^2.4.2",
+    "convict": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "knex": "^0.19.3",
+    "knex-scripts": "^0.3.0",
+    "objection": "^1.6.9",
+    "passport": "^0.4.0",
+    "passport-github": "^1.1.0",
+    "pg": "^7.12.1"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0"
   }
 }

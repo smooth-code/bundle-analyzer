@@ -4,15 +4,21 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "concurrently \"heroku local -f Procfile.dev -p 3000\" \"yarn workspace client dev\"",
     "smee": "smee --url https://smee.io/8hyGlwoDt5131zV --path /event-handler --port 3000"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
     "add": "^2.0.6",
     "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
+    "concurrently": "^4.1.2",
+    "dotenv": "^8.1.0",
     "eslint": "^6.3.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.1.0",
@@ -21,6 +27,10 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^2.0.1",
-    "nodemon": "^1.19.1"
+    "html-webpack-plugin": "^3.2.0",
+    "nodemon": "^1.19.1",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.8.0"
   }
 }
