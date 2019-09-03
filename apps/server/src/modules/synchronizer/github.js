@@ -12,6 +12,35 @@ import {
 } from '../../models'
 import config from '../../config'
 
+const app = new App({
+  id: config.get('github.appId'),
+  privateKey: config.get('github.privateKey'),
+})
+
+const authorizationOctokit = new Octokit({
+  auth: {
+    username: config.get('github.clientId'),
+    password: config.get('github.clientSecret'),
+  },
+})
+
+async function checkAccessTokenValidity(accessToken) {
+  try {
+    await authorizationOctokit.oauthAuthorizations.checkAuthorization({
+      access_token: accessToken,
+      client_id: config.get('github.clientId'),
+    })
+  } catch (error) {
+    if (error.status === 404) {
+      return false
+    }
+
+    throw error
+  }
+
+  return true
+}
+
 const OWNER_ORGANIZATION = 'Organization'
 const OWNER_USER = 'User'
 
@@ -241,11 +270,7 @@ export class GitHubSynchronizer {
     )
   }
 
-  async synchronizeUserInstallations(userId) {
-    const options = this.octokit.apps.listInstallationsForAuthenticatedUser
-      .endpoint.DEFAULTS
-    const githubInstallations = await this.octokit.paginate(options)
-
+  async synchronizeUserInstallations(githubInstallations, userId) {
     const installations = await Promise.all(
       githubInstallations.map(async githubInstallation => {
         return Installation.query()
@@ -254,9 +279,7 @@ export class GitHubSynchronizer {
       }),
     )
 
-    const userInstallations = await UserInstallation.query().where({
-      userId,
-    })
+    const userInstallations = await UserInstallation.query().where({ userId })
 
     await Promise.all(
       installations.map(async installation => {
@@ -285,7 +308,7 @@ export class GitHubSynchronizer {
       }),
     )
 
-    return githubInstallations
+    return installations
   }
 
   async synchronize() {
@@ -309,10 +332,6 @@ export class GitHubSynchronizer {
     const installation = await Installation.query()
       .findById(installationId)
       .eager('users')
-    const app = new App({
-      id: config.get('github.appId'),
-      privateKey: config.get('github.privateKey'),
-    })
 
     this.octokit = new Octokit({
       debug: config.get('env') === 'development',
@@ -327,18 +346,33 @@ export class GitHubSynchronizer {
     await this.synchronizeAppRepositories()
 
     await Promise.all(
-      installation.users.map(user => this.synchronizeFromUser(user.id)),
+      installation.users.map(async user => this.synchronizeFromUser(user.id)),
     )
   }
 
   async synchronizeFromUser(userId) {
     const user = await User.query().findById(userId)
+    const tokenValid = await checkAccessTokenValidity(user.accessToken)
+
+    if (!tokenValid) {
+      await this.synchronizeUserInstallations([], userId)
+      await Promise.all([
+        this.synchronizeRepositoryRights([], userId),
+        this.synchronizeOrganizationRights([], userId),
+      ])
+      return
+    }
+
     this.octokit = new Octokit({
       debug: config.get('env') === 'development',
       auth: user.accessToken,
     })
 
-    const githubInstallations = await this.synchronizeUserInstallations(userId)
+    const options = this.octokit.apps.listInstallationsForAuthenticatedUser
+      .endpoint.DEFAULTS
+    const githubInstallations = await this.octokit.paginate(options)
+
+    await this.synchronizeUserInstallations(githubInstallations, userId)
 
     const results = await Promise.all(
       githubInstallations.map(githubInstallation =>
