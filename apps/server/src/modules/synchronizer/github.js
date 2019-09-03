@@ -8,6 +8,7 @@ import {
   User,
   UserOrganizationRight,
   UserRepositoryRight,
+  UserInstallation,
 } from '../../models'
 import config from '../../config'
 
@@ -27,9 +28,9 @@ export class GitHubSynchronizer {
     return this.synchronizeRepositories(githubRepositories)
   }
 
-  async synchronizeUserInstallationRepositories(installationId) {
+  async synchronizeUserInstallationRepositories(githubInstallationId) {
     const options = this.octokit.apps.listInstallationReposForAuthenticatedUser.endpoint.merge(
-      { installation_id: installationId },
+      { installation_id: githubInstallationId },
     )
     const githubRepositories = await this.octokit.paginate(options)
     return this.synchronizeRepositories(githubRepositories)
@@ -240,6 +241,53 @@ export class GitHubSynchronizer {
     )
   }
 
+  async synchronizeUserInstallations(userId) {
+    const options = this.octokit.apps.listInstallationsForAuthenticatedUser
+      .endpoint.DEFAULTS
+    const githubInstallations = await this.octokit.paginate(options)
+
+    const installations = await Promise.all(
+      githubInstallations.map(async githubInstallation => {
+        return Installation.query()
+          .where({ githubId: githubInstallation.id })
+          .first()
+      }),
+    )
+
+    const userInstallations = await UserInstallation.query().where({
+      userId,
+    })
+
+    await Promise.all(
+      installations.map(async installation => {
+        const exists = userInstallations.some(
+          ({ installationId }) => installationId === installation.id,
+        )
+
+        if (!exists) {
+          await UserInstallation.query().insert({
+            userId,
+            installationId: installation.id,
+          })
+        }
+      }),
+    )
+
+    await Promise.all(
+      userInstallations.map(async userInstallation => {
+        const installationStillExists = installations.find(
+          ({ id }) => id === userInstallation.installationId,
+        )
+
+        if (!installationStillExists) {
+          await userInstallation.$query().delete()
+        }
+      }),
+    )
+
+    return githubInstallations
+  }
+
   async synchronize() {
     this.synchronization = await this.synchronization.$query()
 
@@ -258,7 +306,9 @@ export class GitHubSynchronizer {
   }
 
   async synchronizeFromInstallation(installationId) {
-    const installation = await Installation.query().findById(installationId)
+    const installation = await Installation.query()
+      .findById(installationId)
+      .eager('users')
     const app = new App({
       id: config.get('github.appId'),
       privateKey: config.get('github.privateKey'),
@@ -275,6 +325,10 @@ export class GitHubSynchronizer {
     })
 
     await this.synchronizeAppRepositories()
+
+    await Promise.all(
+      installation.users.map(user => this.synchronizeFromUser(user.id)),
+    )
   }
 
   async synchronizeFromUser(userId) {
@@ -284,18 +338,26 @@ export class GitHubSynchronizer {
       auth: user.accessToken,
     })
 
-    const options = this.octokit.apps.listInstallationsForAuthenticatedUser
-      .endpoint.DEFAULTS
-    const installations = await this.octokit.paginate(options)
+    const githubInstallations = await this.synchronizeUserInstallations(userId)
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const installation of installations) {
-      const {
-        repositories,
-        organizations,
-      } = await this.synchronizeUserInstallationRepositories(installation.id)
-      await this.synchronizeRepositoryRights(repositories, userId)
-      await this.synchronizeOrganizationRights(organizations, userId)
-    }
+    const results = await Promise.all(
+      githubInstallations.map(githubInstallation =>
+        this.synchronizeUserInstallationRepositories(githubInstallation.id),
+      ),
+    )
+
+    const { repositories, organizations } = results.reduce(
+      (all, result) => {
+        all.repositories = [...all.repositories, ...result.repositories]
+        all.organizations = [...all.organizations, ...result.organizations]
+        return all
+      },
+      { repositories: [], organizations: [] },
+    )
+
+    await Promise.all([
+      this.synchronizeRepositoryRights(repositories, userId),
+      this.synchronizeOrganizationRights(organizations, userId),
+    ])
   }
 }

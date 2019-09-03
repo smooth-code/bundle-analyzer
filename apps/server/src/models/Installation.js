@@ -10,4 +10,19 @@ export class Installation extends BaseModel {
       deleted: { type: 'boolean' },
     },
   })
+
+  static relationMappings = {
+    users: {
+      relation: BaseModel.ManyToManyRelation,
+      modelClass: 'User',
+      join: {
+        from: 'installations.id',
+        through: {
+          from: 'user_installations.installationId',
+          to: 'user_installations.userId',
+        },
+        to: 'users.id',
+      },
+    },
+  }
 }

@@ -11,7 +11,7 @@ import { synchronizeFromUserId } from '../jobs/synchronize'
 const router = new Router()
 
 const corsOptions = {
-  origin: ['https://localhost:3000'],
+  origin: 'http://localhost:8080',
 }
 
 router.use(cors(corsOptions))

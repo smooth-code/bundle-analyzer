@@ -6,7 +6,6 @@ import path from 'path'
 import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import axios from 'axios'
-import FormData from 'form-data'
 
 const DIST_PATH = path.resolve(__dirname, 'dist')
 const prod = process.env.NODE_ENV === 'production'
@@ -80,7 +79,7 @@ export default {
   plugins: [
     new HtmlWebpackPlugin({ template: path.join('src/index.html') }),
     new webpack.EnvironmentPlugin(['GITHUB_CLIENT_ID']),
-    new BundleAnalyzer(),
+    ...(prod ? [new BundleAnalyzer()] : []),
   ],
   devServer: {
     hot: true,

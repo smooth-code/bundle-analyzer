@@ -7,8 +7,8 @@ import bundleInfo from './bundleInfo'
 
 const app = express()
 
-app.use(auth)
 app.use(webhooks)
+app.use(auth)
 app.use(bundleInfo)
 
 app.use(

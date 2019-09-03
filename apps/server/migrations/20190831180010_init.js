@@ -98,7 +98,10 @@ exports.up = knex =>
     .createTable('bundle_infos', table => {
       table.bigincrements('id').primary()
       table.timestamps(false, true)
-      table.bigInteger('repository_id').index()
+      table
+        .bigInteger('repository_id')
+        .notNullable()
+        .index()
       table.foreign('repository_id').references('repositories.id')
       table
         .string('branch')
@@ -109,14 +112,29 @@ exports.up = knex =>
         .notNullable()
         .index()
     })
+    .createTable('user_installations', table => {
+      table.bigincrements('id').primary()
+      table.timestamps(false, true)
+      table
+        .bigInteger('user_id')
+        .notNullable()
+        .index()
+      table.foreign('user_id').references('users.id')
+      table
+        .bigInteger('installation_id')
+        .notNullable()
+        .index()
+      table.foreign('installation_id').references('installations.id')
+    })
 
 exports.down = knex =>
   knex.schema
     .dropTableIfExists('user_organization_rights')
     .dropTableIfExists('user_repository_rights')
+    .dropTableIfExists('bundle_infos')
     .dropTableIfExists('repositories')
     .dropTableIfExists('organizations')
     .dropTableIfExists('synchronizations')
     .dropTableIfExists('users')
     .dropTableIfExists('installations')
-    .dropTableIfExists('bundle_infos')
+    .dropTableIfExists('user_installations')
