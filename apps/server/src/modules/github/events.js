@@ -19,7 +19,7 @@ async function createOrUpdateInstallation(payload) {
 export async function handleGitHubEvents({ name, payload }) {
   try {
     switch (name) {
-      case 'integration_installation_repositories': {
+      case 'installation_repositories': {
         switch (payload.action) {
           case 'removed':
           case 'added': {
@@ -44,10 +44,11 @@ export async function handleGitHubEvents({ name, payload }) {
             return
           }
           case 'deleted': {
-            await createOrUpdateInstallation({
+            const installation = await createOrUpdateInstallation({
               githubId: payload.installation.id,
               deleted: true,
             })
+            await synchronizeFromInstallationId(installation.id)
             return
           }
         }

@@ -3,7 +3,6 @@ import asyncHandler from 'express-async-handler'
 import { HttpError } from 'express-err'
 import bodyParser from 'body-parser'
 import { BundleInfo, Repository } from '../models'
-import s3 from '../services/s3'
 
 const router = new Router()
 
@@ -37,12 +36,7 @@ router.post(
       commit: req.body.commit,
     })
 
-    const signedURL = s3.getSignedUrl('putObject', {
-      Bucket: 'bundle-analyzer-development',
-      Key: `bundle/${bundleInfo.id}`,
-    })
-
-    res.send(signedURL)
+    res.send(BundleInfo.getWebpackStatsPutUrl(bundleInfo.id))
   }),
 )
 

@@ -333,6 +333,13 @@ export class GitHubSynchronizer {
       .findById(installationId)
       .eager('users')
 
+    if (installation.deleted) {
+      await Promise.all(
+        installation.users.map(async user => this.synchronizeFromUser(user.id)),
+      )
+      return
+    }
+
     this.octokit = new Octokit({
       debug: config.get('env') === 'development',
       auth: async () => {

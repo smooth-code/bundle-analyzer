@@ -58,6 +58,10 @@ exports.up = knex =>
         .boolean('private')
         .notNullable()
         .index()
+      table
+        .string('baseline_branch')
+        .notNullable()
+        .defaultTo('master')
     })
     .createTable('user_repository_rights', table => {
       table.bigincrements('id').primary()

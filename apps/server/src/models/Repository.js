@@ -19,6 +19,7 @@ export class Repository extends BaseModel {
       organizationId: { type: ['string', null] },
       userId: { type: ['string', null] },
       private: { type: 'boolean' },
+      baselineBranch: { type: 'string' },
     },
   })
 
@@ -49,24 +50,6 @@ export class Repository extends BaseModel {
     },
   }
 
-  static getUsers(repositoryId) {
-    return User.query()
-      .select('users.*')
-      .join(
-        'user_repository_rights',
-        'users.id',
-        '=',
-        'user_repository_rights.userId',
-      )
-      .join(
-        'repositories',
-        'user_repository_rights.repositoryId',
-        '=',
-        'repositories.id',
-      )
-      .where('repositories.id', repositoryId)
-  }
-
   getUsers() {
     return this.constructor.getUsers(this.id)
   }
@@ -76,7 +59,7 @@ export class Repository extends BaseModel {
     this.token = await Repository.generateToken()
   }
 
-  async getOwner() {
+  async $relatedOwner() {
     if (this.userId) {
       if (!this.user) {
         this.user = await this.$relatedQuery('user')
@@ -96,28 +79,35 @@ export class Repository extends BaseModel {
     return null
   }
 
-  async authorization(user) {
-    if (!user) {
-      return false
-    }
+  static getUsers(repositoryId) {
+    return User.query()
+      .select('users.*')
+      .join(
+        'user_repository_rights',
+        'users.id',
+        '=',
+        'user_repository_rights.userId',
+      )
+      .join(
+        'repositories',
+        'user_repository_rights.repositoryId',
+        '=',
+        'repositories.id',
+      )
+      .where('repositories.id', repositoryId)
+  }
 
+  static async checkWritePermission(repository, user) {
+    if (!user) return false
     const userRepositoryRight = await UserRepositoryRight.query()
-      .where({ userId: user.id, repositoryId: this.id })
+      .where({ userId: user.id, repositoryId: repository.id })
       .first()
-
     return Boolean(userRepositoryRight)
   }
 
-  static isAccessible(repository, user) {
-    if (!repository) {
-      return false
-    }
-
-    if (repository.private !== true) {
-      return true
-    }
-
-    return repository.authorization(user)
+  static async checkReadPermission(repository, user) {
+    if (!repository.private) return true
+    return Repository.checkWritePermission(repository, user)
   }
 
   static async generateToken() {

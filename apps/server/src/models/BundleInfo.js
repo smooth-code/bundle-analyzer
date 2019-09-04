@@ -1,4 +1,5 @@
 import { BaseModel, mergeSchemas } from './util'
+import s3 from '../services/s3'
 
 export class BundleInfo extends BaseModel {
   static tableName = 'bundle_infos'
@@ -21,5 +22,23 @@ export class BundleInfo extends BaseModel {
         to: 'repositories.id',
       },
     },
+  }
+
+  static getWebpackStatsPath(bundleInfoId) {
+    return `bundle/${bundleInfoId}/webpack-stats.json`
+  }
+
+  static getWebpackStatsPutUrl(bundleInfoId) {
+    return s3.getSignedUrl('putObject', {
+      Bucket: 'bundle-analyzer-development',
+      Key: BundleInfo.getWebpackStatsPath(bundleInfoId),
+    })
+  }
+
+  static getWebpackStatsGetUrl(bundleInfoId) {
+    return s3.getSignedUrl('getObject', {
+      Bucket: 'bundle-analyzer-development',
+      Key: BundleInfo.getWebpackStatsPath(bundleInfoId),
+    })
   }
 }

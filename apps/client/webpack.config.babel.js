@@ -31,7 +31,7 @@ class BundleAnalyzer {
           const result = await axios.post(
             'http://localhost:3000/bundle-infos',
             {
-              token: 'f5e30554aad4c6811614bc261c94d1141dce0eb2',
+              token: 'adcfb2a9850b616483d5ebbe38fdff2035bfc415',
               branch: 'master',
               commit: 'xxx',
             },
@@ -46,7 +46,6 @@ class BundleAnalyzer {
 
         sendBundleInfo()
           .then(() => {
-            console.log('DONE')
             callback()
           })
           .catch(error => {
@@ -65,7 +64,7 @@ export default {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: 'babel-loader',
       },
@@ -75,6 +74,9 @@ export default {
     path: DIST_PATH,
     filename: prod ? '[name]-bundle-[chunkhash:8].js' : '[name].js',
     publicPath: '/',
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
   },
   plugins: [
     new HtmlWebpackPlugin({ template: path.join('src/index.html') }),
