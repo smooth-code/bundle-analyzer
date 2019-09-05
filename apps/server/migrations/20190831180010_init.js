@@ -139,6 +139,6 @@ exports.down = knex =>
     .dropTableIfExists('repositories')
     .dropTableIfExists('organizations')
     .dropTableIfExists('synchronizations')
+    .dropTableIfExists('user_installations')
     .dropTableIfExists('users')
     .dropTableIfExists('installations')
-    .dropTableIfExists('user_installations')

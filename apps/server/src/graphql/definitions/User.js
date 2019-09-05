@@ -3,6 +3,8 @@ import gql from 'graphql-tag'
 export const typeDefs = gql`
   type User {
     id: ID!
+    login: String!
+    name: String
   }
 
   extend type Query {

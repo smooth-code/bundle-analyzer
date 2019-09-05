@@ -25,7 +25,7 @@ export class BundleInfo extends BaseModel {
   }
 
   static getWebpackStatsPath(bundleInfoId) {
-    return `bundle/${bundleInfoId}/webpack-stats.json`
+    return `bundle/${bundleInfoId}/webpack-stats.gz`
   }
 
   static getWebpackStatsPutUrl(bundleInfoId) {

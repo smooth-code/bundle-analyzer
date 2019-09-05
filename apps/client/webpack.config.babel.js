@@ -2,6 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import 'regenerator-runtime/runtime'
 import 'dotenv/config'
+import { gzipSync } from 'zlib'
 import path from 'path'
 import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
@@ -17,21 +18,15 @@ class BundleAnalyzer {
       '@bundle-analyzer/webpack-plugin',
       (hookCompiler, callback) => {
         const stats = hookCompiler.getStats().toJson({
-          hash: true,
-          publicPath: true,
-          assets: true,
-          chunks: true,
-          modules: true,
+          maxModules: Infinity,
           source: false,
-          errorDetails: true,
-          timings: true,
         })
 
         async function sendBundleInfo() {
           const result = await axios.post(
             'http://localhost:3000/bundle-infos',
             {
-              token: 'adcfb2a9850b616483d5ebbe38fdff2035bfc415',
+              token: 'd179b3bcc70c86b973ebe7f6e46258015b7addfa',
               branch: 'master',
               commit: 'xxx',
             },
@@ -40,7 +35,11 @@ class BundleAnalyzer {
           await axios.request({
             method: 'put',
             url: result.data,
-            data: Buffer.from(JSON.stringify(stats)),
+            data: gzipSync(Buffer.from(JSON.stringify(stats))),
+            headers: {
+              'content-encoding': 'gzip',
+            },
+            maxContentLength: 30 * 1024 * 1024,
           })
         }
 
@@ -49,7 +48,7 @@ class BundleAnalyzer {
             callback()
           })
           .catch(error => {
-            console.log(error.response.data)
+            console.error(error)
             callback(error)
           })
       },

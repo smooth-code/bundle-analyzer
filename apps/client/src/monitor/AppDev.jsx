@@ -1,12 +1,11 @@
 import React from 'react'
 import Header from './containers/Header'
 import Main from './containers/Main'
-import stats from '../../webpack-stats.json'
 
 class App extends React.Component {
-  constructor() {
+  constructor(props) {
     super()
-    this.state = { build: [stats], activeBuild: 0 }
+    this.state = { build: [props.stats], activeBuild: 0 }
     this.handleCircleClick = this.handleCircleClick.bind(this)
     this.selectBuild = this.selectBuild.bind(this)
     this.handleDecrement = this.handleDecrement.bind(this)

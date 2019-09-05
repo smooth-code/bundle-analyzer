@@ -8,7 +8,7 @@ const router = new Router()
 
 router.post(
   '/bundle-infos',
-  bodyParser.json({ limit: '10mb' }),
+  bodyParser.json(),
   asyncHandler(async (req, res) => {
     if (!req.body.token) {
       throw new HttpError(400, 'token is required')

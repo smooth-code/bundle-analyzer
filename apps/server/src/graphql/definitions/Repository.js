@@ -3,6 +3,11 @@ import { Repository, BundleInfo } from '../../models'
 import { getOwner } from './Owner'
 
 export const typeDefs = gql`
+  enum RepositoryPermission {
+    read
+    write
+  }
+
   type Repository {
     id: ID!
     name: String!
@@ -10,6 +15,7 @@ export const typeDefs = gql`
     "Owner of the repository"
     owner: Owner!
     overviewBundleInfo: BundleInfo
+    permissions: [RepositoryPermission]!
   }
 
   extend type Query {
@@ -38,6 +44,13 @@ export const resolvers = {
           branch: repository.baselineBranch,
         })
         .first()
+    },
+    async permissions(repository, args, context) {
+      const hasWritePermission = Repository.checkWritePermission(
+        repository,
+        context.user,
+      )
+      return hasWritePermission ? ['read', 'write'] : ['read']
     },
   },
   Query: {
