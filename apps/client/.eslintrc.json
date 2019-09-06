@@ -1,4 +1,4 @@
 {
   "root": true,
-  "extends": ["smooth/react", "smooth/browser"]
+  "extends": ["smooth/project", "smooth/react", "smooth/browser"]
 }

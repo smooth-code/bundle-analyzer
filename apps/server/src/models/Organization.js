@@ -1,4 +1,6 @@
 import { BaseModel, mergeSchemas } from './util'
+import { OWNER_TYPES } from '../constants'
+import { UserOrganizationRight } from './UserOrganizationRight'
 
 export class Organization extends BaseModel {
   static tableName = 'organizations'
@@ -33,5 +35,21 @@ export class Organization extends BaseModel {
         to: 'repositories.id',
       },
     },
+  }
+
+  type() {
+    return OWNER_TYPES.organization
+  }
+
+  async $checkWritePermission(user) {
+    return Organization.checkWritePermission(this, user)
+  }
+
+  static async checkWritePermission(owner, user) {
+    if (!user) return false
+    const userOrganizationRight = await UserOrganizationRight.query()
+      .where({ userId: user.id, organizationId: owner.id })
+      .first()
+    return Boolean(userOrganizationRight)
   }
 }

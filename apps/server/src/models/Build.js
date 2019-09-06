@@ -1,15 +1,17 @@
 import { BaseModel, mergeSchemas } from './util'
 import s3 from '../services/s3'
 
-export class BundleInfo extends BaseModel {
-  static tableName = 'bundle_infos'
+export class Build extends BaseModel {
+  static tableName = 'builds'
 
   static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
-    required: ['repositoryId', 'branch', 'commit'],
+    required: ['repositoryId', 'branch', 'commit', 'jobStatus'],
     properties: {
       repositoryId: { type: 'string' },
       branch: { type: 'string' },
       commit: { type: 'string' },
+      name: { type: 'string' },
+      jobStatus: { type: 'string' },
     },
   })
 
@@ -18,27 +20,27 @@ export class BundleInfo extends BaseModel {
       relation: BaseModel.BelongsToOneRelation,
       modelClass: 'Repository',
       join: {
-        from: 'bundle_infos.repositoryId',
+        from: 'builds.repositoryId',
         to: 'repositories.id',
       },
     },
   }
 
-  static getWebpackStatsPath(bundleInfoId) {
-    return `bundle/${bundleInfoId}/webpack-stats.gz`
+  static getWebpackStatsPath(buildId) {
+    return `builds/${buildId}/webpack-stats.gz`
   }
 
-  static getWebpackStatsPutUrl(bundleInfoId) {
+  static getWebpackStatsPutUrl(buildId) {
     return s3.getSignedUrl('putObject', {
       Bucket: 'bundle-analyzer-development',
-      Key: BundleInfo.getWebpackStatsPath(bundleInfoId),
+      Key: Build.getWebpackStatsPath(buildId),
     })
   }
 
-  static getWebpackStatsGetUrl(bundleInfoId) {
+  static getWebpackStatsGetUrl(buildId) {
     return s3.getSignedUrl('getObject', {
       Bucket: 'bundle-analyzer-development',
-      Key: BundleInfo.getWebpackStatsPath(bundleInfoId),
+      Key: Build.getWebpackStatsPath(buildId),
     })
   }
 }

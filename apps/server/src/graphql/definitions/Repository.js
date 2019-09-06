@@ -1,34 +1,29 @@
 import gql from 'graphql-tag'
-import { Repository, BundleInfo } from '../../models'
+import { Repository, Build } from '../../models'
 import { getOwner } from './Owner'
 
 export const typeDefs = gql`
-  enum RepositoryPermission {
-    read
-    write
-  }
-
   type Repository {
     id: ID!
     name: String!
     token: ID
     "Owner of the repository"
     owner: Owner!
-    overviewBundleInfo: BundleInfo
-    permissions: [RepositoryPermission]!
+    active: Boolean!
+    overviewBuild: Build
+    permissions: [Permission]!
   }
 
   extend type Query {
     "Get a repository"
-    repository(ownerLogin: String!, repositoryName: String!): Repository
+    repository(ownerLogin: String!, name: String!): Repository
   }
 `
 
 export const resolvers = {
   Repository: {
     async token(repository, args, context) {
-      const hasWritePermission = Repository.checkWritePermission(
-        repository,
+      const hasWritePermission = await repository.$checkWritePermission(
         context.user,
       )
       if (!hasWritePermission) return null
@@ -37,8 +32,8 @@ export const resolvers = {
     async owner(repository) {
       return repository.$relatedOwner()
     },
-    async overviewBundleInfo(repository) {
-      return BundleInfo.query()
+    async overviewBuild(repository) {
+      return Build.query()
         .where({
           repositoryId: repository.id,
           branch: repository.baselineBranch,
@@ -46,11 +41,13 @@ export const resolvers = {
         .first()
     },
     async permissions(repository, args, context) {
-      const hasWritePermission = Repository.checkWritePermission(
-        repository,
+      const hasWritePermission = await repository.$checkWritePermission(
         context.user,
       )
       return hasWritePermission ? ['read', 'write'] : ['read']
+    },
+    active(repository) {
+      return repository.enabled
     },
   },
   Query: {
@@ -60,15 +57,14 @@ export const resolvers = {
 
       const repository = await Repository.query()
         .where({
-          [`${owner.type}Id`]: owner.id,
-          name: args.repositoryName,
+          [`${owner.type()}Id`]: owner.id,
+          name: args.name,
         })
         .first()
 
       if (!repository) return null
 
-      const hasReadPermission = await Repository.checkReadPermission(
-        repository,
+      const hasReadPermission = await repository.$checkReadPermission(
         context.user,
       )
 

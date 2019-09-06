@@ -1,106 +1,71 @@
 import React from 'react'
 import gql from 'graphql-tag'
-import { Link, Route } from 'react-router-dom'
+import { Route, Link } from 'react-router-dom'
 import styled, { Box } from '@xstyled/styled-components'
+import { GoRepo } from 'react-icons/go'
 import { FaGithub } from 'react-icons/fa'
-import { Query } from '../../containers/Apollo'
-import { useRouter } from '../../containers/Router'
-import { Container } from '../../components'
+import {
+  Header,
+  HeaderBody,
+  HeaderTitle,
+  HeaderPrimary,
+  HeaderSecondaryLink,
+  TabList,
+  RouterTabItem,
+} from 'components'
+import { Query } from 'containers/Apollo'
+import { useRouter } from 'containers/Router'
 import { RepositoryProvider, useRepository } from './RepositoryContext'
 import { RepositoryOverview } from './Overview'
 import { RepositoryBuilds } from './Builds'
 import { RepositorySettings } from './Settings'
 
-const Header = styled.header`
-  background-color: gray800;
-  color: white;
-  border-top: 1;
-  border-bottom: 1;
-  border-color: gray700;
-`
-
-const Title = styled.h2`
-  margin: 4 0;
-  font-weight: 300;
-  display: flex;
-  align-items: center;
-`
-
-const TabList = styled.ul`
-  padding: 0;
-  margin: 0;
-  margin-bottom: -1rpx;
-  list-style-type: none;
-  display: flex;
-  font-weight: medium;
-  font-size: 14;
-`
-
-const TabItem = styled.li`
-  padding: 0;
-  margin: 0;
-  border-bottom: 1;
-  border-color: transparent;
-  transition: base;
-  transition-property: border-color;
-
-  &[aria-current='true'] {
-    border-color: white;
-  }
-`
-
-const TabItemLink = styled.a`
-  color: white;
-  text-decoration: none;
-  padding: 3;
-  display: block;
-`
-
-function Tab({ children, exact, to }) {
-  return (
-    <Route exact={exact} path={to}>
-      {({ match }) => (
-        <TabItem aria-current={Boolean(match)}>
-          <TabItemLink as={Link} to={to}>
-            {children}
-          </TabItemLink>
-        </TabItem>
-      )}
-    </Route>
-  )
-}
-
 function hasWritePermission(repository) {
   return repository.permissions.includes('write')
 }
+
+const RepoTitlePart = styled.span`
+  margin: 0 2;
+  color: white;
+  text-decoration: none;
+
+  a&:hover {
+    text-decoration: underline;
+  }
+`
 
 function RepositoryHeader() {
   const repository = useRepository()
   const { match } = useRouter()
   return (
     <Header>
-      <Container>
-        <Title>
-          <Box
-            as="a"
+      <HeaderBody>
+        <HeaderPrimary>
+          <HeaderTitle>
+            <Box forwardedAs={GoRepo} display="block" mt="6rpx" />
+            <RepoTitlePart as={Link} to={`/gh/${repository.owner.login}`}>
+              {repository.owner.login}
+            </RepoTitlePart>
+            / <RepoTitlePart>{repository.name}</RepoTitlePart>
+          </HeaderTitle>
+          <HeaderSecondaryLink
+            forwardedAs="a"
             href={`https://github.com/${repository.owner.login}/${repository.name}`}
-            mr={2}
-            color="white"
           >
-            <FaGithub />
-          </Box>
-          {repository.owner.login}/{repository.name}
-        </Title>
+            <Box forwardedAs={FaGithub} mr={1} /> {repository.owner.login}/
+            {repository.name}
+          </HeaderSecondaryLink>
+        </HeaderPrimary>
         <TabList>
-          <Tab exact to={match.url}>
+          <RouterTabItem exact to={match.url}>
             Overview
-          </Tab>
-          <Tab to={`${match.url}/builds`}>Builds</Tab>
+          </RouterTabItem>
+          <RouterTabItem to={`${match.url}/builds`}>Builds</RouterTabItem>
           {hasWritePermission(repository) ? (
-            <Tab to={`${match.url}/settings`}>Settings</Tab>
+            <RouterTabItem to={`${match.url}/settings`}>Settings</RouterTabItem>
           ) : null}
         </TabList>
-      </Container>
+      </HeaderBody>
     </Header>
   )
 }
@@ -114,23 +79,25 @@ export function Repository({
   return (
     <Query
       query={gql`
-        query Repository($ownerLogin: String!, $repositoryName: String!) {
-          repository(ownerLogin: $ownerLogin, repositoryName: $repositoryName) {
+        query Repository($ownerLogin: String!, $name: String!) {
+          repository(ownerLogin: $ownerLogin, name: $name) {
+            id
             name
             token
             permissions
             owner {
+              id
               name
               login
             }
-            overviewBundleInfo {
+            overviewBuild {
               id
               webpackStatsUrl
             }
           }
         }
       `}
-      variables={{ ownerLogin, repositoryName }}
+      variables={{ ownerLogin, name: repositoryName }}
     >
       {({ repository }) => (
         <RepositoryProvider repository={repository}>

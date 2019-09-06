@@ -1,4 +1,5 @@
 import styled from '@xstyled/styled-components'
+import { FadeLink } from './Link'
 
 export const Navbar = styled.nav`
   height: 60;
@@ -8,6 +9,10 @@ export const Navbar = styled.nav`
   display: flex;
 `
 
+export const NavbarBrandLink = styled(FadeLink)`
+  flex: 1 0;
+`
+
 export const NavbarBrand = styled.h1`
   font-size: 20;
   color: white;
@@ -15,7 +20,7 @@ export const NavbarBrand = styled.h1`
   align-items: center;
   font-weight: normal;
   margin: 0;
-  flex: 1 0;
+  text-decoration: none;
 `
 
 export const NavbarBrandLogo = styled.div`

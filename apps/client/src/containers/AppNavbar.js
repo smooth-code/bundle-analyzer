@@ -1,9 +1,10 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Box } from '@smooth-ui/core-sc'
 import { FaGithub } from 'react-icons/fa'
 import {
-  Avatar,
   NavbarSecondary,
+  NavbarBrandLink,
   Navbar,
   NavbarBrand,
   NavbarBrandLogo,
@@ -12,7 +13,8 @@ import {
   MenuItem,
   MenuDisclosure,
   useMenuState,
-} from '../components'
+} from 'components'
+import { OwnerAvatar } from 'containers/OwnerAvatar'
 import { useLogout } from './Auth'
 import { useUser } from './User'
 
@@ -28,14 +30,10 @@ function UserMenu({ user }) {
     <>
       <MenuDisclosure {...menu}>
         {({ type, ...disclosureProps }) => (
-          <Avatar
-            alt={user.name}
-            src={`https://github.com/${user.login}.png?size=60`}
-            {...disclosureProps}
-          />
+          <OwnerAvatar owner={user} {...disclosureProps} />
         )}
       </MenuDisclosure>
-      <Menu {...menu}>
+      <Menu aria-label="User settings" {...menu}>
         <MenuItem {...menu} onClick={() => logout()}>
           Logout
         </MenuItem>
@@ -48,12 +46,14 @@ export function AppNavbar() {
   const user = useUser()
   return (
     <Navbar>
-      <NavbarBrand>
-        <NavbarBrandLogo>
-          <BrandLogo />
-        </NavbarBrandLogo>
-        Bundle Analyzer
-      </NavbarBrand>
+      <NavbarBrandLink as={Link} to="/">
+        <NavbarBrand>
+          <NavbarBrandLogo>
+            <BrandLogo />
+          </NavbarBrandLogo>
+          Bundle Analyzer
+        </NavbarBrand>
+      </NavbarBrandLink>
       <NavbarSecondary>
         {user ? (
           <UserMenu user={user} />

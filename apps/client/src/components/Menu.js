@@ -40,9 +40,13 @@ const InnerMenu = styled.div`
   }
 `
 
-export function Menu({ children, ...props }) {
+export const Menu = React.forwardRef(function Menu(
+  { children, ...props },
+  ref,
+) {
   return (
     <ReakitMenu
+      ref={ref}
       data-animated={props.unstable_animated}
       data-animating={props.unstable_animating}
       {...props}
@@ -50,7 +54,7 @@ export function Menu({ children, ...props }) {
       {menuProps => <InnerMenu {...menuProps}>{children}</InnerMenu>}
     </ReakitMenu>
   )
-}
+})
 
 const InnerMenuItem = styled.button`
   appearance: none;
@@ -74,6 +78,6 @@ const InnerMenuItem = styled.button`
   }
 `
 
-export function MenuItem(props) {
-  return <ReakitMenuItem as={InnerMenuItem} {...props} />
-}
+export const MenuItem = React.forwardRef(function MenuItem(props, ref) {
+  return <ReakitMenuItem ref={ref} as={InnerMenuItem} {...props} />
+})

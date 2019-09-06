@@ -19,6 +19,7 @@ const theme = {
     dark: '#424a52',
     gray900: '#242830',
     gray800: '#2c323e',
+    gray700: '#424752',
     gray600: '#8A94A7',
     primary: '#0a80cc',
   },

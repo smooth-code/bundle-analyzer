@@ -1,6 +1,5 @@
 import gql from 'graphql-tag'
 import { User, Organization } from '../../models'
-import { OWNER_TYPES } from '../../constants'
 
 export const typeDefs = gql`
   enum OwnerType {
@@ -13,7 +12,9 @@ export const typeDefs = gql`
     name: String
     login: String!
     type: OwnerType!
-    repositories: [Repository!]!
+    repositoriesNumber: Int!
+    repositories(active: Boolean): [Repository!]!
+    permissions: [Permission]!
   }
 
   extend type Query {
@@ -29,23 +30,15 @@ const sortByLogin = (a, b) => (a.login < b.login ? -1 : 1)
 export async function getOwner({ login }) {
   let owner = await Organization.query()
     .where({ login })
-    .limit(1)
     .first()
 
-  if (owner) {
-    owner.type = OWNER_TYPES.organization
-    return owner
-  }
+  if (owner) return owner
 
   owner = await User.query()
     .where({ login })
-    .limit(1)
     .first()
 
-  if (owner) {
-    owner.type = OWNER_TYPES.user
-    return owner
-  }
+  if (owner) return owner
 
   return null
 }
@@ -54,14 +47,19 @@ export const resolvers = {
   Owner: {
     async repositories(owner, args, context) {
       if (!context.user) {
-        return owner.$relatedQuery('repositories').where({
+        const repositoriesQuery = owner.$relatedQuery('repositories').where({
           private: false,
-          enabled: true,
-          [`repositories.${owner.type}Id`]: owner.id,
+          [`repositories.${owner.type()}Id`]: owner.id,
         })
+
+        if (args.active !== undefined) {
+          return repositoriesQuery.where({ enabled: args.active })
+        }
+
+        return repositoriesQuery
       }
 
-      return owner
+      const repositoriesQuery = owner
         .$relatedQuery('repositories')
         .select('repositories.*')
         .leftJoin(
@@ -69,12 +67,41 @@ export const resolvers = {
           'user_repository_rights.repositoryId',
           'repositories.id',
         )
-        .where({ private: false })
-        .orWhere({
-          'user_repository_rights.userId': context.user.id,
-          private: true,
-          [`repositories.${owner.type}Id`]: owner.id,
+        .where(builder => {
+          builder.where({ private: false }).orWhere({
+            'user_repository_rights.userId': context.user.id,
+            private: true,
+            [`repositories.${owner.type()}Id`]: owner.id,
+          })
         })
+
+      if (args.active !== undefined) {
+        return repositoriesQuery.where({ enabled: args.active })
+      }
+
+      return repositoriesQuery
+    },
+    async permissions(owner, args, context) {
+      const hasWritePermission = owner.$checkWritePermission(context.user)
+      return hasWritePermission ? ['read', 'write'] : ['read']
+    },
+    async repositoriesNumber(owner, args, context) {
+      const [{ count }] = await owner
+        .$relatedQuery('repositories')
+        .count('repositories.*')
+        .leftJoin(
+          'user_repository_rights',
+          'user_repository_rights.repositoryId',
+          'repositories.id',
+        )
+        .where(builder => {
+          builder.where({ private: false }).orWhere({
+            'user_repository_rights.userId': context.user.id,
+            private: true,
+            [`repositories.${owner.type()}Id`]: owner.id,
+          })
+        })
+      return count
     },
   },
   Query: {
@@ -91,13 +118,7 @@ export const resolvers = {
         )
         .where('user_repository_rights.userId', context.user.id)
 
-      return [
-        ...organizations.map(organization => ({
-          ...organization,
-          type: OWNER_TYPES.organization,
-        })),
-        ...users.map(user => ({ ...user, type: OWNER_TYPES.user })),
-      ].sort(sortByLogin)
+      return [...organizations, ...users].sort(sortByLogin)
     },
     async owner(rootObject, args) {
       return getOwner({ login: args.login })

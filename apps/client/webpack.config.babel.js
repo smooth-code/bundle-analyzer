@@ -22,11 +22,11 @@ class BundleAnalyzer {
           source: false,
         })
 
-        async function sendBundleInfo() {
-          const result = await axios.post(
-            'http://localhost:3000/bundle-infos',
+        async function sendBuild() {
+          const { data: build } = await axios.post(
+            'http://localhost:3000/builds',
             {
-              token: 'd179b3bcc70c86b973ebe7f6e46258015b7addfa',
+              token: 'f9621a9da084f91ebda243c035883269885f4ac3',
               branch: 'master',
               commit: 'xxx',
             },
@@ -34,16 +34,20 @@ class BundleAnalyzer {
 
           await axios.request({
             method: 'put',
-            url: result.data,
+            url: build.webpackStatsPutUrl,
             data: gzipSync(Buffer.from(JSON.stringify(stats))),
             headers: {
               'content-encoding': 'gzip',
             },
             maxContentLength: 30 * 1024 * 1024,
           })
+
+          await axios.post(`http://localhost:3000/builds/${build.id}/start`, {
+            token: 'f9621a9da084f91ebda243c035883269885f4ac3',
+          })
         }
 
-        sendBundleInfo()
+        sendBuild()
           .then(() => {
             callback()
           })

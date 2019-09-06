@@ -1,4 +1,5 @@
 import { BaseModel, mergeSchemas } from './util'
+import { OWNER_TYPES } from '../constants'
 
 export class User extends BaseModel {
   static tableName = 'users'
@@ -52,5 +53,18 @@ export class User extends BaseModel {
         to: 'repositories.id',
       },
     },
+  }
+
+  type() {
+    return OWNER_TYPES.user
+  }
+
+  $checkWritePermission(user) {
+    return User.checkWritePermission(this, user)
+  }
+
+  static checkWritePermission(owner, user) {
+    if (!user) return false
+    return owner.id === user.id
   }
 }

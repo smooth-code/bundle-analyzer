@@ -1,7 +1,11 @@
-exports.up = knex =>
-  knex.schema
+exports.up = async knex => {
+  await knex.raw('create extension if not exists "uuid-ossp"')
+  await knex.schema
     .createTable('users', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
       table
         .integer('github_id')
@@ -16,7 +20,10 @@ exports.up = knex =>
       table.string('name')
     })
     .createTable('organizations', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
       table
         .integer('github_id')
@@ -29,15 +36,21 @@ exports.up = knex =>
         .notNullable()
     })
     .createTable('user_organization_rights', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
-      table.bigInteger('user_id').index()
+      table.uuid('user_id').index()
       table.foreign('user_id').references('users.id')
-      table.bigInteger('organization_id').index()
+      table.uuid('organization_id').index()
       table.foreign('organization_id').references('organizations.id')
     })
     .createTable('repositories', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
       table
         .integer('github_id')
@@ -50,9 +63,9 @@ exports.up = knex =>
         .defaultTo(false)
         .index()
       table.string('token').notNullable()
-      table.bigInteger('organization_id').index()
+      table.uuid('organization_id').index()
       table.foreign('organization_id').references('organizations.id')
-      table.bigInteger('user_id').index()
+      table.uuid('user_id').index()
       table.foreign('user_id').references('users.id')
       table
         .boolean('private')
@@ -64,15 +77,21 @@ exports.up = knex =>
         .defaultTo('master')
     })
     .createTable('user_repository_rights', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
-      table.bigInteger('user_id').index()
+      table.uuid('user_id').index()
       table.foreign('user_id').references('users.id')
-      table.bigInteger('repository_id').index()
+      table.uuid('repository_id').index()
       table.foreign('repository_id').references('repositories.id')
     })
     .createTable('installations', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
       table
         .integer('github_id')
@@ -84,11 +103,14 @@ exports.up = knex =>
         .defaultTo(false)
     })
     .createTable('synchronizations', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
-      table.bigInteger('installation_id').index()
+      table.uuid('installation_id').index()
       table.foreign('installation_id').references('installations.id')
-      table.bigInteger('user_id').index()
+      table.uuid('user_id').index()
       table.foreign('user_id').references('users.id')
       table
         .string('job_status')
@@ -99,14 +121,22 @@ exports.up = knex =>
         .notNullable()
         .index()
     })
-    .createTable('bundle_infos', table => {
-      table.bigincrements('id').primary()
+    .createTable('builds', table => {
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
       table
-        .bigInteger('repository_id')
+        .uuid('repository_id')
         .notNullable()
         .index()
       table.foreign('repository_id').references('repositories.id')
+      table
+        .string('name')
+        .notNullable()
+        .defaultTo('default')
+        .index()
       table
         .string('branch')
         .notNullable()
@@ -115,27 +145,35 @@ exports.up = knex =>
         .string('commit')
         .notNullable()
         .index()
+      table
+        .string('job_status')
+        .notNullable()
+        .index()
     })
     .createTable('user_installations', table => {
-      table.bigincrements('id').primary()
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
       table.timestamps(false, true)
       table
-        .bigInteger('user_id')
+        .uuid('user_id')
         .notNullable()
         .index()
       table.foreign('user_id').references('users.id')
       table
-        .bigInteger('installation_id')
+        .uuid('installation_id')
         .notNullable()
         .index()
       table.foreign('installation_id').references('installations.id')
     })
+}
 
 exports.down = knex =>
   knex.schema
     .dropTableIfExists('user_organization_rights')
     .dropTableIfExists('user_repository_rights')
-    .dropTableIfExists('bundle_infos')
+    .dropTableIfExists('builds')
     .dropTableIfExists('repositories')
     .dropTableIfExists('organizations')
     .dropTableIfExists('synchronizations')

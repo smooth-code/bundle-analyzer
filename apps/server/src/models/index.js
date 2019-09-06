@@ -1,4 +1,4 @@
-export * from './BundleInfo'
+export * from './Build'
 export * from './Installation'
 export * from './Synchronization'
 export * from './Organization'

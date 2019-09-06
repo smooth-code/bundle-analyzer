@@ -5,6 +5,7 @@
   "scripts": {
     "dev:web": "nodemon src/workers/web.js",
     "dev:synchronize": "nodemon src/workers/synchronize.js",
+    "dev:build": "nodemon src/workers/build.js",
     "db:check-structure": "knex-scripts check-structure",
     "db:create": "yarn knex-scripts create",
     "db:drop": "yarn knex-scripts drop",

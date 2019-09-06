@@ -1,6 +1,6 @@
 import styled from '@xstyled/styled-components'
 
-export const Avatar = styled.img`
+export const Avatar = styled.imgBox`
   border-radius: 50%;
   width: 30;
   height: 30;

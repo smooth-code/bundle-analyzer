@@ -3,14 +3,14 @@ import { formatters } from 'express-err'
 import auth from './auth'
 import webhooks from './webhooks'
 import errorHandler from './errorHandler'
-import bundleInfo from './bundleInfo'
+import build from './build'
 import { apolloServer } from '../graphql'
 
 const app = express()
 
 app.use(webhooks)
 app.use(auth)
-app.use(bundleInfo)
+app.use(build)
 
 apolloServer.applyMiddleware({ app })
 

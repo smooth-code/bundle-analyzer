@@ -97,6 +97,14 @@ export class Repository extends BaseModel {
       .where('repositories.id', repositoryId)
   }
 
+  async $checkWritePermission(user) {
+    return Repository.checkWritePermission(this, user)
+  }
+
+  async $checkReadPermission(user) {
+    return Repository.checkReadPermission(this, user)
+  }
+
   static async checkWritePermission(repository, user) {
     if (!user) return false
     const userRepositoryRight = await UserRepositoryRight.query()

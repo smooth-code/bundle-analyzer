@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
-import { BundleInfo } from '../../models'
+import { Build } from '../../models'
 
 export const typeDefs = gql`
-  type BundleInfo {
+  type Build {
     id: ID!
     branch: String!
     commit: String!
@@ -11,9 +11,9 @@ export const typeDefs = gql`
 `
 
 export const resolvers = {
-  BundleInfo: {
-    async webpackStatsUrl(bundleInfo) {
-      return BundleInfo.getWebpackStatsGetUrl(bundleInfo.id)
+  Build: {
+    async webpackStatsUrl(build) {
+      return Build.getWebpackStatsGetUrl(build.id)
     },
   },
 }

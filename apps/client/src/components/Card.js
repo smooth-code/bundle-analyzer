@@ -1,6 +1,4 @@
 import styled from '@xstyled/styled-components'
-import { transparentize } from 'polished'
-import { th } from '@xstyled/system'
 
 export const Card = styled.box`
   border-radius: base;
@@ -12,7 +10,7 @@ export const CardBody = styled.box`
 `
 
 export const CardText = styled.p`
-  font-size: 12;
+  font-size: 13;
 `
 
 export const CardTitle = styled.h3`
@@ -23,15 +21,19 @@ export const CardTitle = styled.h3`
 `
 
 export const CardHeader = styled.headerBox`
-  font-size: 15;
-  color: white;
   border-bottom: 1;
-  border-bottom-color: ${p => transparentize(0.8, th.color('white')(p))};
+  border-bottom-color: gray700;
+  padding: 2;
+`
+
+export const CardFooter = styled.footerBox`
+  border-top: 1;
+  border-top-color: gray700;
   padding: 2;
 `
 
 export const CardStat = styled.box`
-  font-size: 48;
+  font-size: 36;
   color: white;
   text-align: center;
   padding: 4;

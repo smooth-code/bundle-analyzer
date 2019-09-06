@@ -1,0 +1,181 @@
+import React from 'react'
+import gql from 'graphql-tag'
+import { Link } from 'react-router-dom'
+import styled, { Box } from '@xstyled/styled-components'
+import { Query } from 'containers/Apollo'
+import { GoRepo } from 'react-icons/go'
+import {
+  getTotalAssetsSize,
+  getTotalChunksNumber,
+  getTotalModulesNumber,
+  getTotalAssetsNumber,
+} from 'modules/stats'
+import {
+  Container,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  FadeLink,
+  FileSize,
+  Loader,
+} from 'components'
+import { StatsLoader } from 'containers/StatsLoader'
+import { useOwner } from './OwnerContext'
+
+const Stat = styled.div`
+  display: flex;
+`
+
+const StatLabel = styled.span`
+  flex: 1;
+`
+const StatValue = styled.span`
+  flex: 0 0 auto;
+  color: white;
+`
+
+export function RepositorySummary({ repository }) {
+  if (!repository.overviewBuild) {
+    return <div>No Info</div>
+  }
+  return (
+    <StatsLoader
+      fallback={
+        <Box textAlign="center">
+          <Loader />
+        </Box>
+      }
+      url={repository.overviewBuild.webpackStatsUrl}
+    >
+      {stats => (
+        <Box>
+          <Box row mx={-4}>
+            <Box col px={4} borderRight={1} borderColor="gray600">
+              <Stat>
+                <StatLabel>Total size</StatLabel>
+                <StatValue>
+                  <FileSize>{getTotalAssetsSize(stats)}</FileSize>
+                </StatValue>
+              </Stat>
+            </Box>
+            <Box col px={4} borderRight={1} borderColor="gray600">
+              <Stat>
+                <StatLabel>Chunks</StatLabel>
+                <StatValue>
+                  <FileSize>{getTotalChunksNumber(stats)}</FileSize>
+                </StatValue>
+              </Stat>
+            </Box>
+            <Box col px={4} borderRight={1} borderColor="gray600">
+              <Stat>
+                <StatLabel>Modules</StatLabel>
+                <StatValue>
+                  <FileSize>{getTotalModulesNumber(stats)}</FileSize>
+                </StatValue>
+              </Stat>
+            </Box>
+            <Box col px={4}>
+              <Stat>
+                <StatLabel>Assets</StatLabel>
+                <StatValue>
+                  <FileSize>{getTotalAssetsNumber(stats)}</FileSize>
+                </StatValue>
+              </Stat>
+            </Box>
+          </Box>
+        </Box>
+      )}
+    </StatsLoader>
+  )
+}
+
+const Title = styled.h3`
+  font-size: 18;
+  font-weight: medium;
+`
+
+export function OwnerRepositories() {
+  const owner = useOwner()
+  return (
+    <Query
+      query={gql`
+        query OwnerRepositories($login: String!) {
+          owner(login: $login) {
+            id
+            repositories {
+              id
+              name
+              active
+              overviewBuild {
+                id
+                webpackStatsUrl
+              }
+            }
+          }
+        }
+      `}
+      variables={{ login: owner.login }}
+    >
+      {({ owner: { repositories } }) => {
+        if (!repositories.length) {
+          return (
+            <Container my={4} textAlign="center">
+              No repository found for {owner.login}.
+            </Container>
+          )
+        }
+        const activeRepositories = repositories.filter(
+          repository => repository.active,
+        )
+        const inactiveRepositories = repositories.filter(
+          repository => !repository.active,
+        )
+        return (
+          <Container my={4}>
+            <Box row my={-2} justifyContent="center">
+              {activeRepositories.map(repository => (
+                <Box col={1} py={2} key={repository.id}>
+                  <Card>
+                    <CardHeader display="flex" alignItems="center">
+                      <Box as={GoRepo} color="white" mr={2} />
+                      <FadeLink
+                        forwardedAs={Link}
+                        color="white"
+                        to={`/gh/${owner.login}/${repository.name}`}
+                      >
+                        <CardTitle>{repository.name}</CardTitle>
+                      </FadeLink>
+                    </CardHeader>
+                    <CardBody>
+                      <RepositorySummary repository={repository} />
+                    </CardBody>
+                  </Card>
+                </Box>
+              ))}
+              {inactiveRepositories.length > 0 && (
+                <Title>Inactive repositories</Title>
+              )}
+              {inactiveRepositories.map(repository => (
+                <Box col={1} py={2} key={repository.id}>
+                  <Card>
+                    <CardBody p={2} display="flex" alignItems="center">
+                      <Box as={GoRepo} color="white" mr={2} />
+                      <FadeLink
+                        forwardedAs={Link}
+                        color="white"
+                        to={`/gh/${owner.login}/${repository.name}`}
+                      >
+                        {repository.name}
+                      </FadeLink>
+                    </CardBody>
+                  </Card>
+                </Box>
+              ))}
+            </Box>
+          </Container>
+        )
+      }}
+    </Query>
+  )
+}
