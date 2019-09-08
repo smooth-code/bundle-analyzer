@@ -9,6 +9,7 @@ export const typeDefs = gql`
     token: ID
     "Owner of the repository"
     owner: Owner!
+    baselineBranch: String!
     active: Boolean!
     overviewBuild: Build
     permissions: [Permission]!
@@ -19,6 +20,16 @@ export const typeDefs = gql`
   extend type Query {
     "Get a repository"
     repository(ownerLogin: String!, name: String!): Repository
+  }
+
+  input RepositoryUpdate {
+    id: ID!
+    baselineBranch: String
+  }
+
+  extend type Mutation {
+    "Update a repository."
+    updateRepository(repository: RepositoryUpdate!): Repository!
   }
 `
 
@@ -97,6 +108,31 @@ export const resolvers = {
       if (!hasReadPermission) return null
 
       return repository
+    },
+  },
+  Mutation: {
+    async updateRepository(rootObj, args, context) {
+      if (!context.user) {
+        throw new Error('Forbidden')
+      }
+
+      const repository = await Repository.query().findById(args.repository.id)
+
+      if (!repository) {
+        throw new Error('Repository not found')
+      }
+
+      const hasWritePermission = await repository.$checkWritePermission(
+        context.user,
+      )
+
+      if (!hasWritePermission) {
+        throw new Error('Forbidden')
+      }
+
+      const { id, ...data } = args.repository
+
+      return repository.$query().patchAndFetch(data)
     },
   },
 }

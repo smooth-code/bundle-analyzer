@@ -87,6 +87,7 @@ export function Repository({
             name
             token
             permissions
+            baselineBranch
             owner {
               id
               name
