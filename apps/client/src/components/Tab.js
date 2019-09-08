@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link, Route } from 'react-router-dom'
-import styled from '@xstyled/styled-components'
+import styled, { css } from '@xstyled/styled-components'
+import { up } from '@xstyled/system'
 
 export const TabList = styled.ul`
   padding: 0;
@@ -28,8 +29,17 @@ export const TabItem = styled.li`
 export const TabItemLink = styled.a`
   color: white;
   text-decoration: none;
-  padding: 3;
+  padding: 2 3;
   display: block;
+  overflow-x: auto;
+
+  ${up(
+    'md',
+    css`
+      padding: 3;
+      overflow-x: visible;
+    `,
+  )}
 `
 
 export function RouterTabItem({ children, exact, to }) {

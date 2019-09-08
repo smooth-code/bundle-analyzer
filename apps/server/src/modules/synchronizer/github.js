@@ -8,7 +8,8 @@ import {
   User,
   UserOrganizationRight,
   UserRepositoryRight,
-  UserInstallation,
+  UserInstallationRight,
+  InstallationRepositoryRight,
 } from '../../models'
 import config from '../../config'
 
@@ -51,18 +52,36 @@ export class GitHubSynchronizer {
     this.organizationIds = []
   }
 
-  async synchronizeAppRepositories() {
+  async synchronizeAppRepositories(installationId) {
     const options = this.octokit.apps.listRepos.endpoint.DEFAULTS
     const githubRepositories = await this.octokit.paginate(options)
-    return this.synchronizeRepositories(githubRepositories)
+    const { repositories, organizations } = await this.synchronizeRepositories(
+      githubRepositories,
+    )
+
+    await this.synchronizeInstallationRepositoryRights(
+      repositories,
+      installationId,
+    )
+
+    return { repositories, organizations }
   }
 
-  async synchronizeUserInstallationRepositories(githubInstallationId) {
+  async synchronizeUserInstallationRepositories(installation) {
     const options = this.octokit.apps.listInstallationReposForAuthenticatedUser.endpoint.merge(
-      { installation_id: githubInstallationId },
+      { installation_id: installation.githubId },
     )
     const githubRepositories = await this.octokit.paginate(options)
-    return this.synchronizeRepositories(githubRepositories)
+    const { repositories, organizations } = await this.synchronizeRepositories(
+      githubRepositories,
+    )
+
+    await this.synchronizeInstallationRepositoryRights(
+      repositories,
+      installation.id,
+    )
+
+    return { repositories, organizations }
   }
 
   async synchronizeRepositories(githubRepositories) {
@@ -96,6 +115,7 @@ export class GitHubSynchronizer {
         } else {
           repository = await Repository.query().insert({
             ...data,
+            baselineBranch: githubRepository.default_branch,
             enabled: false,
           })
         }
@@ -204,6 +224,41 @@ export class GitHubSynchronizer {
     return user
   }
 
+  async synchronizeInstallationRepositoryRights(repositories, installationId) {
+    const installationRepositoryRights = await InstallationRepositoryRight.query().where(
+      {
+        installationId,
+      },
+    )
+
+    await Promise.all(
+      repositories.map(async repository => {
+        const hasRights = installationRepositoryRights.some(
+          ({ repositoryId }) => repositoryId === repository.id,
+        )
+
+        if (!hasRights) {
+          await InstallationRepositoryRight.query().insert({
+            installationId,
+            repositoryId: repository.id,
+          })
+        }
+      }),
+    )
+
+    await Promise.all(
+      installationRepositoryRights.map(async installationRepositoryRight => {
+        const repositoryStillExists = repositories.find(
+          ({ id }) => id === installationRepositoryRight.repositoryId,
+        )
+
+        if (!repositoryStillExists) {
+          await installationRepositoryRight.$query().delete()
+        }
+      }),
+    )
+  }
+
   async synchronizeRepositoryRights(repositories, userId) {
     const userRepositoryRights = await UserRepositoryRight.query().where({
       userId,
@@ -270,7 +325,7 @@ export class GitHubSynchronizer {
     )
   }
 
-  async synchronizeUserInstallations(githubInstallations, userId) {
+  async synchronizeUserInstallationRights(githubInstallations, userId) {
     const installations = await Promise.all(
       githubInstallations.map(async githubInstallation => {
         return Installation.query()
@@ -279,16 +334,18 @@ export class GitHubSynchronizer {
       }),
     )
 
-    const userInstallations = await UserInstallation.query().where({ userId })
+    const userInstallationRights = await UserInstallationRight.query().where({
+      userId,
+    })
 
     await Promise.all(
       installations.map(async installation => {
-        const exists = userInstallations.some(
+        const exists = userInstallationRights.some(
           ({ installationId }) => installationId === installation.id,
         )
 
         if (!exists) {
-          await UserInstallation.query().insert({
+          await UserInstallationRight.query().insertAndFetch({
             userId,
             installationId: installation.id,
           })
@@ -297,13 +354,13 @@ export class GitHubSynchronizer {
     )
 
     await Promise.all(
-      userInstallations.map(async userInstallation => {
+      userInstallationRights.map(async userInstallationRight => {
         const installationStillExists = installations.find(
-          ({ id }) => id === userInstallation.installationId,
+          ({ id }) => id === userInstallationRight.installationId,
         )
 
         if (!installationStillExists) {
-          await userInstallation.$query().delete()
+          await userInstallationRight.$query().delete()
         }
       }),
     )
@@ -337,6 +394,7 @@ export class GitHubSynchronizer {
       await Promise.all(
         installation.users.map(async user => this.synchronizeFromUser(user.id)),
       )
+      await this.synchronizeInstallationRepositoryRights([], installationId)
       return
     }
 
@@ -350,7 +408,7 @@ export class GitHubSynchronizer {
       },
     })
 
-    await this.synchronizeAppRepositories()
+    await this.synchronizeAppRepositories(installationId)
 
     await Promise.all(
       installation.users.map(async user => this.synchronizeFromUser(user.id)),
@@ -362,7 +420,7 @@ export class GitHubSynchronizer {
     const tokenValid = await checkAccessTokenValidity(user.accessToken)
 
     if (!tokenValid) {
-      await this.synchronizeUserInstallations([], userId)
+      await this.synchronizeUserInstallationRights([], userId)
       await Promise.all([
         this.synchronizeRepositoryRights([], userId),
         this.synchronizeOrganizationRights([], userId),
@@ -379,11 +437,14 @@ export class GitHubSynchronizer {
       .endpoint.DEFAULTS
     const githubInstallations = await this.octokit.paginate(options)
 
-    await this.synchronizeUserInstallations(githubInstallations, userId)
+    const installations = await this.synchronizeUserInstallationRights(
+      githubInstallations,
+      userId,
+    )
 
     const results = await Promise.all(
-      githubInstallations.map(githubInstallation =>
-        this.synchronizeUserInstallationRepositories(githubInstallation.id),
+      installations.map(installation =>
+        this.synchronizeUserInstallationRepositories(installation),
       ),
     )
 

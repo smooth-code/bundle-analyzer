@@ -1,3 +1,4 @@
+export * from './AlertBar'
 export * from './Avatar'
 export * from './BrandLogo'
 export * from './Card'

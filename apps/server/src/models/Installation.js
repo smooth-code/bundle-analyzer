@@ -18,10 +18,21 @@ export class Installation extends BaseModel {
       join: {
         from: 'installations.id',
         through: {
-          from: 'user_installations.installationId',
-          to: 'user_installations.userId',
+          from: 'user_installation_rights.installationId',
+          to: 'user_installation_rights.userId',
         },
         to: 'users.id',
+      },
+    },
+    synchronizations: {
+      relation: BaseModel.HasManyRelation,
+      modelClass: 'Synchronization',
+      join: {
+        from: 'installations.id',
+        to: 'synchronizations.installationId',
+      },
+      modify(builder) {
+        return builder.orderBy('synchronizations.createdAt', 'desc')
       },
     },
   }

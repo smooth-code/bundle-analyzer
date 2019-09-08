@@ -31,6 +31,9 @@ export class Repository extends BaseModel {
         from: 'repositories.id',
         to: 'builds.repositoryId',
       },
+      modify(builder) {
+        return builder.orderBy('number', 'desc')
+      },
     },
     organization: {
       relation: BaseModel.BelongsToOneRelation,

@@ -149,8 +149,12 @@ exports.up = async knex => {
         .string('job_status')
         .notNullable()
         .index()
+      table
+        .integer('number')
+        .notNullable()
+        .index()
     })
-    .createTable('user_installations', table => {
+    .createTable('user_installation_rights', table => {
       table
         .uuid('id')
         .primary()
@@ -167,16 +171,34 @@ exports.up = async knex => {
         .index()
       table.foreign('installation_id').references('installations.id')
     })
+    .createTable('installation_repository_rights', table => {
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+      table.timestamps(false, true)
+      table
+        .uuid('installation_id')
+        .notNullable()
+        .index()
+      table.foreign('installation_id').references('installations.id')
+      table
+        .uuid('repository_id')
+        .notNullable()
+        .index()
+      table.foreign('repository_id').references('repositories.id')
+    })
 }
 
 exports.down = knex =>
   knex.schema
     .dropTableIfExists('user_organization_rights')
     .dropTableIfExists('user_repository_rights')
+    .dropTableIfExists('user_installation_rights')
+    .dropTableIfExists('installation_repository_rights')
     .dropTableIfExists('builds')
     .dropTableIfExists('repositories')
     .dropTableIfExists('organizations')
     .dropTableIfExists('synchronizations')
-    .dropTableIfExists('user_installations')
     .dropTableIfExists('users')
     .dropTableIfExists('installations')

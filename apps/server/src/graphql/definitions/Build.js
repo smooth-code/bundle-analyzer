@@ -8,6 +8,11 @@ export const typeDefs = gql`
     commit: String!
     webpackStatsUrl: String!
   }
+
+  type BuildResult {
+    pageInfo: PageInfo!
+    edges: [Build!]!
+  }
 `
 
 export const resolvers = {

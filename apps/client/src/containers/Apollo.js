@@ -29,11 +29,11 @@ export function ApolloInitializer({ children }) {
 }
 
 export function useQuery(query, options) {
-  const { loading, error, data } = useApolloQuery(query, options)
+  const { loading, error, data, ...others } = useApolloQuery(query, options)
   if (error) {
     throw error
   }
-  return { loading, data }
+  return { loading, data, ...others }
 }
 
 export function Query({ fallback = null, children, query, ...props }) {

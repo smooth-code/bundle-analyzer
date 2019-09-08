@@ -7,7 +7,7 @@ export const Loader = props => (
     width="2rem"
     height="2rem"
     viewBox="0 0 135 140"
-    fill="#fff"
+    fill="currentColor"
     {...props}
   >
     <rect y={10} width={15} height={120} rx={6}>

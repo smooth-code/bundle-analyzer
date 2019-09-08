@@ -5,6 +5,8 @@ export const typeDefs = gql`
     id: ID!
     login: String!
     name: String
+    installations: [Installation!]!
+    latestSynchronization: Synchronization
   }
 
   extend type Query {
@@ -15,8 +17,16 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Query: {
-    async user(rootObj, args, context) {
+    async user(user, args, context) {
       return context.user || null
+    },
+  },
+  User: {
+    async installations(user) {
+      return user.$relatedQuery('installations')
+    },
+    async latestSynchronization(user) {
+      return user.$relatedQuery('synchronizations').first()
     },
   },
 }

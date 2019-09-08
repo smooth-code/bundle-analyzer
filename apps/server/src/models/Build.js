@@ -1,6 +1,8 @@
 import { BaseModel, mergeSchemas } from './util'
 import s3 from '../services/s3'
 
+const NEXT_NUMBER = Symbol('nextNumber')
+
 export class Build extends BaseModel {
   static tableName = 'builds'
 
@@ -12,6 +14,7 @@ export class Build extends BaseModel {
       commit: { type: 'string' },
       name: { type: 'string' },
       jobStatus: { type: 'string' },
+      number: { type: 'integer' },
     },
   })
 
@@ -27,7 +30,7 @@ export class Build extends BaseModel {
   }
 
   static getWebpackStatsPath(buildId) {
-    return `builds/${buildId}/webpack-stats.gz`
+    return `builds/${buildId}/webpack-stats.json`
   }
 
   static getWebpackStatsPutUrl(buildId) {
@@ -42,5 +45,23 @@ export class Build extends BaseModel {
       Bucket: 'bundle-analyzer-development',
       Key: Build.getWebpackStatsPath(buildId),
     })
+  }
+
+  $beforeInsert(queryContext) {
+    super.$beforeInsert(queryContext)
+    if (this.number === undefined) {
+      this.number = NEXT_NUMBER
+    }
+  }
+
+  $toDatabaseJson(queryContext) {
+    const json = super.$toDatabaseJson(queryContext)
+    if (json.number === NEXT_NUMBER) {
+      json.number = this.$knex().raw(
+        '(select coalesce(max(number),0) + 1 as number from builds where "repository_id" = ?)',
+        this.repositoryId,
+      )
+    }
+    return json
   }
 }

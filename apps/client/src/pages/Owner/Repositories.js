@@ -51,7 +51,12 @@ export function RepositorySummary({ repository }) {
       {stats => (
         <Box>
           <Box row mx={-4}>
-            <Box col px={4} borderRight={1} borderColor="gray600">
+            <Box
+              col={{ xs: 1, md: 1 / 4 }}
+              px={4}
+              borderRight={1}
+              borderColor="gray600"
+            >
               <Stat>
                 <StatLabel>Total size</StatLabel>
                 <StatValue>
@@ -59,7 +64,12 @@ export function RepositorySummary({ repository }) {
                 </StatValue>
               </Stat>
             </Box>
-            <Box col px={4} borderRight={1} borderColor="gray600">
+            <Box
+              col={{ xs: 1, md: 1 / 4 }}
+              px={4}
+              borderRight={1}
+              borderColor="gray600"
+            >
               <Stat>
                 <StatLabel>Chunks</StatLabel>
                 <StatValue>
@@ -67,7 +77,12 @@ export function RepositorySummary({ repository }) {
                 </StatValue>
               </Stat>
             </Box>
-            <Box col px={4} borderRight={1} borderColor="gray600">
+            <Box
+              col={{ xs: 1, md: 1 / 4 }}
+              px={4}
+              borderRight={1}
+              borderColor="gray600"
+            >
               <Stat>
                 <StatLabel>Modules</StatLabel>
                 <StatValue>
@@ -75,7 +90,7 @@ export function RepositorySummary({ repository }) {
                 </StatValue>
               </Stat>
             </Box>
-            <Box col px={4}>
+            <Box col={{ xs: 1, md: 1 / 4 }} px={4}>
               <Stat>
                 <StatLabel>Assets</StatLabel>
                 <StatValue>

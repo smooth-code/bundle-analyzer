@@ -12,6 +12,8 @@ export const typeDefs = gql`
     active: Boolean!
     overviewBuild: Build
     permissions: [Permission]!
+    "Builds associated to the repository"
+    builds(first: Int!, after: Int!): BuildResult!
   }
 
   extend type Query {
@@ -49,6 +51,22 @@ export const resolvers = {
     active(repository) {
       return repository.enabled
     },
+    async builds(repository, args) {
+      const result = await repository
+        .$relatedQuery('builds')
+        .range(args.after, args.after + args.first - 1)
+
+      const hasNextPage = args.after + args.first < result.total
+
+      return {
+        pageInfo: {
+          totalCount: result.total,
+          hasNextPage,
+          endCursor: hasNextPage ? args.after + args.first : result.total,
+        },
+        edges: result.results,
+      }
+    },
   },
   Query: {
     async repository(rootObj, args, context) {
@@ -60,6 +78,14 @@ export const resolvers = {
           [`${owner.type()}Id`]: owner.id,
           name: args.name,
         })
+        .whereExists(builder =>
+          builder
+            .select('*')
+            .from('installation_repository_rights')
+            .whereRaw(
+              'repositories.id = installation_repository_rights.repository_id',
+            ),
+        )
         .first()
 
       if (!repository) return null

@@ -16,11 +16,7 @@ export function OwnerSettings() {
           <CardBody>
             <CardTitle>GitHub Integration</CardTitle>
             <CardText>This account is configured via the GitHub App.</CardText>
-            <Button
-              as="a"
-              href="https://github.com/apps/bundle-analyzer"
-              variant="dark"
-            >
+            <Button as="a" href="https://github.com/apps/bundle-analyzer">
               Continue to GitHub to manage repository integration
             </Button>
           </CardBody>

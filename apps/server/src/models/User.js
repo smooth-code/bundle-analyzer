@@ -53,6 +53,29 @@ export class User extends BaseModel {
         to: 'repositories.id',
       },
     },
+    installations: {
+      relation: BaseModel.ManyToManyRelation,
+      modelClass: 'Installation',
+      join: {
+        from: 'users.id',
+        through: {
+          from: 'user_installation_rights.userId',
+          to: 'user_installation_rights.installationId',
+        },
+        to: 'installations.id',
+      },
+    },
+    synchronizations: {
+      relation: BaseModel.HasManyRelation,
+      modelClass: 'Synchronization',
+      join: {
+        from: 'users.id',
+        to: 'synchronizations.userId',
+      },
+      modify(builder) {
+        return builder.orderBy('synchronizations.createdAt', 'desc')
+      },
+    },
   }
 
   type() {

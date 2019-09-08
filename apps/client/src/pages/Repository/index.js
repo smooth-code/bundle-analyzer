@@ -12,6 +12,8 @@ import {
   HeaderSecondaryLink,
   TabList,
   RouterTabItem,
+  Container,
+  FadeLink,
 } from 'components'
 import { Query } from 'containers/Apollo'
 import { useRouter } from 'containers/Router'
@@ -99,18 +101,35 @@ export function Repository({
       `}
       variables={{ ownerLogin, name: repositoryName }}
     >
-      {({ repository }) => (
-        <RepositoryProvider repository={repository}>
-          <>
-            <RepositoryHeader />
-            <Route exact path={url} component={RepositoryOverview} />
-            <Route path={`${url}/builds`} component={RepositoryBuilds} />
-            {hasWritePermission(repository) ? (
-              <Route path={`${url}/settings`} component={RepositorySettings} />
-            ) : null}
-          </>
-        </RepositoryProvider>
-      )}
+      {({ repository }) => {
+        if (!repository) {
+          return (
+            <Container textAlign="center" my={4}>
+              <p>Repository not found.</p>
+              <p>
+                <FadeLink forwardedAs={Link} color="white" to="/">
+                  Back to home
+                </FadeLink>
+              </p>
+            </Container>
+          )
+        }
+        return (
+          <RepositoryProvider repository={repository}>
+            <>
+              <RepositoryHeader />
+              <Route exact path={url} component={RepositoryOverview} />
+              <Route path={`${url}/builds`} component={RepositoryBuilds} />
+              {hasWritePermission(repository) ? (
+                <Route
+                  path={`${url}/settings`}
+                  component={RepositorySettings}
+                />
+              ) : null}
+            </>
+          </RepositoryProvider>
+        )
+      }}
     </Query>
   )
 }

@@ -1,7 +1,7 @@
 import { BaseModel, mergeSchemas } from './util'
 
-export class UserInstallation extends BaseModel {
-  static tableName = 'user_installations'
+export class UserInstallationRight extends BaseModel {
+  static tableName = 'user_installation_rights'
 
   static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
     required: ['userId', 'installationId'],
@@ -16,7 +16,7 @@ export class UserInstallation extends BaseModel {
       relation: BaseModel.BelongsToOneRelation,
       modelClass: 'User',
       join: {
-        from: 'user_installations.userId',
+        from: 'user_installation_rights.userId',
         to: 'users.id',
       },
     },
@@ -24,7 +24,7 @@ export class UserInstallation extends BaseModel {
       relation: BaseModel.BelongsToOneRelation,
       modelClass: 'Installation',
       join: {
-        from: 'user_installations.installationId',
+        from: 'user_installation_rights.installationId',
         to: 'installations.id',
       },
     },

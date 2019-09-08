@@ -47,10 +47,20 @@ export const resolvers = {
   Owner: {
     async repositories(owner, args, context) {
       if (!context.user) {
-        const repositoriesQuery = owner.$relatedQuery('repositories').where({
-          private: false,
-          [`repositories.${owner.type()}Id`]: owner.id,
-        })
+        const repositoriesQuery = owner
+          .$relatedQuery('repositories')
+          .where({
+            private: false,
+            [`repositories.${owner.type()}Id`]: owner.id,
+          })
+          .whereExists(builder =>
+            builder
+              .select('*')
+              .from('installation_repository_rights')
+              .whereRaw(
+                'repositories.id = installation_repository_rights.repository_id',
+              ),
+          )
 
         if (args.active !== undefined) {
           return repositoriesQuery.where({ enabled: args.active })
@@ -74,6 +84,14 @@ export const resolvers = {
             [`repositories.${owner.type()}Id`]: owner.id,
           })
         })
+        .whereExists(builder =>
+          builder
+            .select('*')
+            .from('installation_repository_rights')
+            .whereRaw(
+              'repositories.id = installation_repository_rights.repository_id',
+            ),
+        )
 
       if (args.active !== undefined) {
         return repositoriesQuery.where({ enabled: args.active })
@@ -101,6 +119,14 @@ export const resolvers = {
             [`repositories.${owner.type()}Id`]: owner.id,
           })
         })
+        .whereExists(builder =>
+          builder
+            .select('*')
+            .from('installation_repository_rights')
+            .whereRaw(
+              'repositories.id = installation_repository_rights.repository_id',
+            ),
+        )
       return count
     },
   },

@@ -8,10 +8,8 @@ import {
   CardStat,
   FileSize,
   Loader,
-  Code,
   CardBody,
   CardTitle,
-  CardText,
 } from 'components'
 import {
   getTotalAssetsSize,
@@ -20,12 +18,13 @@ import {
   getTotalAssetsNumber,
 } from 'modules/stats'
 import { StatsLoader } from 'containers/StatsLoader'
-import { hasWritePermission } from 'modules/permissions'
 import { useRepository } from './RepositoryContext'
+import { RepositoryEmpty } from './Empty'
 
 const Table = styled.tableBox`
   color: white;
   border-collapse: collapse;
+  width: 100%;
 
   thead tr {
     border-bottom: 1;
@@ -47,28 +46,8 @@ const Table = styled.tableBox`
 
 export function RepositoryOverview() {
   const repository = useRepository()
-  const write = hasWritePermission(repository)
-  if (!write && !repository.overviewBuild) {
-    return (
-      <Container textAlign="center" my={4}>
-        There is no stats uploaded for this repository.
-      </Container>
-    )
-  }
-  if (write && !repository.overviewBuild) {
-    return (
-      <Container textAlign="center" my={4}>
-        <Card>
-          <CardBody>
-            <CardTitle>Setup Bundle Analyzer on this project</CardTitle>
-            <CardText>TODO: document how to setup the project.</CardText>
-            <pre>
-              <Code>BUNDLE_ANALYZER_TOKEN={repository.token}</Code>
-            </pre>
-          </CardBody>
-        </Card>
-      </Container>
-    )
+  if (!repository.overviewBuild) {
+    return <RepositoryEmpty />
   }
   return (
     <Container my={4} position="relative">
@@ -82,7 +61,7 @@ export function RepositoryOverview() {
       >
         {stats => (
           <Box row m={-2}>
-            <Box col={1 / 4} p={2}>
+            <Box col={{ xs: 1, md: 1 / 4 }} p={2}>
               <Card color="white">
                 <CardHeader>
                   <CardTitle>Total size</CardTitle>
@@ -92,7 +71,7 @@ export function RepositoryOverview() {
                 </CardStat>
               </Card>
             </Box>
-            <Box col={1 / 4} p={2}>
+            <Box col={{ xs: 1, md: 1 / 4 }} p={2}>
               <Card color="white">
                 <CardHeader>
                   <CardTitle>Chunks</CardTitle>
@@ -100,7 +79,7 @@ export function RepositoryOverview() {
                 <CardStat>{getTotalChunksNumber(stats)}</CardStat>
               </Card>
             </Box>
-            <Box col={1 / 4} p={2}>
+            <Box col={{ xs: 1, md: 1 / 4 }} p={2}>
               <Card color="white">
                 <CardHeader>
                   <CardTitle>Modules</CardTitle>
@@ -108,7 +87,7 @@ export function RepositoryOverview() {
                 <CardStat>{getTotalModulesNumber(stats)}</CardStat>
               </Card>
             </Box>
-            <Box col={1 / 4} p={2}>
+            <Box col={{ xs: 1, md: 1 / 4 }} p={2}>
               <Card color="white">
                 <CardHeader>
                   <CardTitle>Assets</CardTitle>
@@ -123,26 +102,28 @@ export function RepositoryOverview() {
                   <CardTitle>Assets</CardTitle>
                 </CardHeader>
                 <CardBody>
-                  <Table style={{ width: '100%' }}>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Chunks</th>
-                        <th style={{ width: 120 }}>Size</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stats.assets.map((asset, index) => (
-                        <tr key={index}>
-                          <td>{asset.name}</td>
-                          <td>{asset.chunkNames.length}</td>
-                          <td>
-                            <FileSize>{asset.size}</FileSize>
-                          </td>
+                  <Box style={{ overflowX: 'auto' }}>
+                    <Table>
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Chunks</th>
+                          <th style={{ width: 120 }}>Size</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
+                      </thead>
+                      <tbody>
+                        {stats.assets.map((asset, index) => (
+                          <tr key={index}>
+                            <td>{asset.name}</td>
+                            <td>{asset.chunkNames.length}</td>
+                            <td>
+                              <FileSize>{asset.size}</FileSize>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </Box>
                 </CardBody>
               </Card>
             </Box>
@@ -152,28 +133,30 @@ export function RepositoryOverview() {
                   <CardTitle>Chunks</CardTitle>
                 </CardHeader>
                 <CardBody>
-                  <Table style={{ width: '100%' }}>
-                    <thead>
-                      <tr>
-                        <th>Names</th>
-                        <th>Files</th>
-                        <th>Modules</th>
-                        <th style={{ width: 120 }}>Size</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stats.chunks.map((chunk, index) => (
-                        <tr key={index}>
-                          <td>{chunk.names.join(', ')}</td>
-                          <td>{chunk.files.join(', ')}</td>
-                          <td>{chunk.modules.length}</td>
-                          <td>
-                            <FileSize>{chunk.size}</FileSize>
-                          </td>
+                  <Box style={{ overflowX: 'auto' }}>
+                    <Table>
+                      <thead>
+                        <tr>
+                          <th>Names</th>
+                          <th>Files</th>
+                          <th>Modules</th>
+                          <th style={{ width: 120 }}>Size</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
+                      </thead>
+                      <tbody>
+                        {stats.chunks.map((chunk, index) => (
+                          <tr key={index}>
+                            <td>{chunk.names.join(', ')}</td>
+                            <td>{chunk.files.join(', ')}</td>
+                            <td>{chunk.modules.length}</td>
+                            <td>
+                              <FileSize>{chunk.size}</FileSize>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </Box>
                 </CardBody>
               </Card>
             </Box>

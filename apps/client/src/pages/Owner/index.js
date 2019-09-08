@@ -1,6 +1,6 @@
 import React from 'react'
 import gql from 'graphql-tag'
-import { Route } from 'react-router-dom'
+import { Route, Link } from 'react-router-dom'
 import { Box } from '@xstyled/styled-components'
 import { FaGithub } from 'react-icons/fa'
 import {
@@ -11,6 +11,8 @@ import {
   HeaderSecondaryLink,
   TabList,
   RouterTabItem,
+  Container,
+  FadeLink,
 } from 'components'
 import { Query } from 'containers/Apollo'
 import { OwnerAvatar } from 'containers/OwnerAvatar'
@@ -67,24 +69,38 @@ export function Owner({
       `}
       variables={{ login: ownerLogin }}
     >
-      {({ owner }) => (
-        <OwnerProvider owner={owner}>
-          <>
-            <OwnerHeader />
-            <Route
-              exact
-              path={`/gh/${owner.login}`}
-              component={OwnerRepositories}
-            />
-            {hasWritePermission(owner) ? (
+      {({ owner }) => {
+        if (!owner) {
+          return (
+            <Container textAlign="center" my={4}>
+              <p>Organization or user not found.</p>
+              <p>
+                <FadeLink forwardedAs={Link} color="white" to="/">
+                  Back to home
+                </FadeLink>
+              </p>
+            </Container>
+          )
+        }
+        return (
+          <OwnerProvider owner={owner}>
+            <>
+              <OwnerHeader />
               <Route
-                path={`/account/gh/${ownerLogin}`}
-                component={OwnerSettings}
+                exact
+                path={`/gh/${owner.login}`}
+                component={OwnerRepositories}
               />
-            ) : null}
-          </>
-        </OwnerProvider>
-      )}
+              {hasWritePermission(owner) ? (
+                <Route
+                  path={`/account/gh/${ownerLogin}`}
+                  component={OwnerSettings}
+                />
+              ) : null}
+            </>
+          </OwnerProvider>
+        )
+      }}
     </Query>
   )
 }

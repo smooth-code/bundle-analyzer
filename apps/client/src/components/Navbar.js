@@ -2,8 +2,7 @@ import styled from '@xstyled/styled-components'
 import { FadeLink } from './Link'
 
 export const Navbar = styled.nav`
-  height: 60;
-  padding: 15 2;
+  padding: 20 3;
   max-width: container;
   margin: 0 auto;
   display: flex;
