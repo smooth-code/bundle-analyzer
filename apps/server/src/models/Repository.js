@@ -10,7 +10,7 @@ export class Repository extends BaseModel {
   static tableName = 'repositories'
 
   static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
-    required: ['githubId', 'name', 'private'],
+    required: ['githubId', 'name', 'private', 'sizeCheckConfig'],
     properties: {
       githubId: { type: 'number' },
       name: { type: 'string' },
@@ -21,6 +21,7 @@ export class Repository extends BaseModel {
       userId: { type: ['string', null] },
       private: { type: 'boolean' },
       baselineBranch: { type: 'string' },
+      sizeCheckConfig: { type: 'object' },
     },
   })
 
@@ -34,6 +35,18 @@ export class Repository extends BaseModel {
       },
       modify(builder) {
         return builder.orderBy('number', 'desc')
+      },
+    },
+    installations: {
+      relation: BaseModel.ManyToManyRelation,
+      modelClass: 'Installation',
+      join: {
+        from: 'repositories.id',
+        through: {
+          from: 'installation_repository_rights.repositoryId',
+          to: 'installation_repository_rights.installationId',
+        },
+        to: 'installations.id',
       },
     },
     organization: {

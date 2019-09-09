@@ -31,7 +31,11 @@ function OwnerHeader() {
             <OwnerAvatar owner={owner} mr={2} />
             {owner.login}
           </HeaderTitle>
-          <HeaderSecondaryLink href={`https://github.com/${owner.login}`}>
+          <HeaderSecondaryLink
+            target="_blank"
+            rel="noopener noreferrer"
+            href={`https://github.com/${owner.login}`}
+          >
             <Box forwardedAs={FaGithub} mr={1} /> {owner.login}
           </HeaderSecondaryLink>
         </HeaderPrimary>

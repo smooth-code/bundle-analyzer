@@ -6,6 +6,7 @@ export const typeDefs = gql`
     id: ID!
     branch: String!
     commit: String!
+    number: Int!
     webpackStatsUrl: String!
   }
 

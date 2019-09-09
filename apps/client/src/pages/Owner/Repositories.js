@@ -37,7 +37,7 @@ const StatValue = styled.span`
 
 export function RepositorySummary({ repository }) {
   if (!repository.overviewBuild) {
-    return <div>No Info</div>
+    return <div>No info to display</div>
   }
   return (
     <StatsLoader

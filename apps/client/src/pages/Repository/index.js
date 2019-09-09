@@ -56,6 +56,8 @@ function RepositoryHeader() {
           </HeaderTitle>
           <HeaderSecondaryLink
             forwardedAs="a"
+            target="_blank"
+            rel="noopener noreferrer"
             href={`https://github.com/${repository.owner.login}/${repository.name}`}
           >
             <Box forwardedAs={FaGithub} mr={1} /> {repository.owner.login}/

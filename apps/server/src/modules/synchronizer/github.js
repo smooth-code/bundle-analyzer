@@ -1,6 +1,9 @@
 /* eslint-disable no-await-in-loop */
-import Octokit from '@octokit/rest'
-import { App } from '@octokit/app'
+import {
+  authorizationOctokit,
+  getUserOctokit,
+  getInstallationOctokit,
+} from '../github/client'
 import {
   Installation,
   Organization,
@@ -12,18 +15,6 @@ import {
   InstallationRepositoryRight,
 } from '../../models'
 import config from '../../config'
-
-const app = new App({
-  id: config.get('github.appId'),
-  privateKey: config.get('github.privateKey'),
-})
-
-const authorizationOctokit = new Octokit({
-  auth: {
-    username: config.get('github.clientId'),
-    password: config.get('github.clientSecret'),
-  },
-})
 
 async function checkAccessTokenValidity(accessToken) {
   try {
@@ -110,12 +101,25 @@ export class GitHubSynchronizer {
           githubId: githubRepository.id,
         })
 
+        if (githubRepository.archived) {
+          data.archived = true
+        }
+
         if (repository) {
           await repository.$query().patchAndFetch(data)
         } else {
           repository = await Repository.query().insert({
             ...data,
             baselineBranch: githubRepository.default_branch,
+            sizeCheckConfig: {
+              files: [
+                {
+                  test: '*',
+                  maxSize: '250 kB',
+                  compression: 'none',
+                },
+              ],
+            },
           })
         }
 
@@ -325,13 +329,13 @@ export class GitHubSynchronizer {
   }
 
   async synchronizeUserInstallationRights(githubInstallations, userId) {
-    const installations = await Promise.all(
+    const installations = (await Promise.all(
       githubInstallations.map(async githubInstallation => {
         return Installation.query()
           .where({ githubId: githubInstallation.id })
           .first()
       }),
-    )
+    )).filter(Boolean)
 
     const userInstallationRights = await UserInstallationRight.query().where({
       userId,
@@ -397,15 +401,7 @@ export class GitHubSynchronizer {
       return
     }
 
-    this.octokit = new Octokit({
-      debug: config.get('env') === 'development',
-      auth: async () => {
-        const installationAccessToken = await app.getInstallationAccessToken({
-          installationId: installation.githubId,
-        })
-        return `token ${installationAccessToken}`
-      },
-    })
+    this.octokit = getInstallationOctokit(installation)
 
     await this.synchronizeAppRepositories(installationId)
 
@@ -427,10 +423,7 @@ export class GitHubSynchronizer {
       return
     }
 
-    this.octokit = new Octokit({
-      debug: config.get('env') === 'development',
-      auth: user.accessToken,
-    })
+    this.octokit = getUserOctokit(user)
 
     const options = this.octokit.apps.listInstallationsForAuthenticatedUser
       .endpoint.DEFAULTS

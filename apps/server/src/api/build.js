@@ -4,6 +4,7 @@ import { HttpError } from 'express-err'
 import bodyParser from 'body-parser'
 import { Build, Repository } from '../models'
 import buildJob from '../jobs/build'
+import { getInstallationOctokit } from '../modules/github/client'
 
 const router = new Router()
 
@@ -46,6 +47,7 @@ router.post(
       repositoryId: req.repository.id,
       branch: req.body.branch,
       commit: req.body.commit,
+      stats: req.body.stats,
     })
 
     res.send({
@@ -73,7 +75,28 @@ router.post(
       await req.repository.$query().patch({ active: true })
     }
 
-    build = await build.$query()
+    const owner = await req.repository.$relatedOwner()
+
+    const [installation] = await req.repository.$relatedQuery('installations')
+    if (!installation) {
+      throw new HttpError(400, `Installation not found for repository`)
+    }
+
+    const octokit = getInstallationOctokit(installation)
+    const { data: checkRun } = await octokit.checks.create({
+      owner: owner.login,
+      repo: req.repository.name,
+      name: 'bundle-analyzer',
+      head_sha: build.commit,
+      external_id: build.id,
+      status: 'queued',
+      details_url: `http://localhost:8080/gh/${owner.login}/${req.repository.name}/builds/${build.number}`,
+    })
+
+    build = await build
+      .$query()
+      .patchAndFetch({ githubCheckRunId: checkRun.id })
+
     await buildJob.push(build.id)
 
     res.send(build)

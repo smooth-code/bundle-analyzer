@@ -7,7 +7,7 @@ export class Build extends BaseModel {
   static tableName = 'builds'
 
   static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
-    required: ['repositoryId', 'branch', 'commit', 'jobStatus'],
+    required: ['repositoryId', 'branch', 'commit', 'jobStatus', 'stats'],
     properties: {
       repositoryId: { type: 'string' },
       branch: { type: 'string' },
@@ -15,6 +15,8 @@ export class Build extends BaseModel {
       name: { type: 'string' },
       jobStatus: { type: 'string' },
       number: { type: 'integer' },
+      githubCheckRunId: { type: 'integer' },
+      stats: { type: 'object' },
     },
   })
 
