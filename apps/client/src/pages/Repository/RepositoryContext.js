@@ -11,6 +11,7 @@ export const RepositoryContextFragment = gql`
     baselineBranch
     archived
     active
+    sizeCheckConfig
     owner {
       id
       name
@@ -18,7 +19,17 @@ export const RepositoryContextFragment = gql`
     }
     overviewBuild {
       id
-      webpackStatsUrl
+      stats {
+        assets {
+          name
+          size
+          gzipSize
+          brotliSize
+          chunkNames
+        }
+        chunksNumber
+        modulesNumber
+      }
     }
   }
 `

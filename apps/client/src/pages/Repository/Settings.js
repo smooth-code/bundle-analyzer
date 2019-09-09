@@ -1,6 +1,6 @@
 import React from 'react'
-import { Box, Boxer, Button, Input } from '@smooth-ui/core-sc'
-import { FaCheck } from 'react-icons/fa'
+import { Box, Boxer, Button, Input, Textarea } from '@smooth-ui/core-sc'
+import { FaCheck, FaTimes } from 'react-icons/fa'
 import {
   Container,
   Card,
@@ -10,6 +10,27 @@ import {
   Code,
 } from '../../components'
 import { useRepository, useUpdateRepository } from './RepositoryContext'
+
+function SmallAlert({ variant, ...props }) {
+  switch (variant) {
+    case 'updated':
+      return (
+        <Box role="alert" fontSize={12} {...props}>
+          <Box forwardedAs={FaCheck} color="success" mr={1} />
+          Saved
+        </Box>
+      )
+    case 'invalid':
+      return (
+        <Box role="alert" fontSize={12} {...props}>
+          <Box forwardedAs={FaTimes} color="danger" mr={1} />
+          Invalid
+        </Box>
+      )
+    default:
+      return null
+  }
+}
 
 function BaselineBranch() {
   const repository = useRepository()
@@ -42,9 +63,7 @@ function BaselineBranch() {
             }}
             maxWidth={200}
           />
-          {updated ? (
-            <Box forwardedAs={FaCheck} color="success" ml={2} />
-          ) : null}
+          {updated ? <SmallAlert ml={2} variant="updated" /> : null}
         </Box>
       </CardBody>
     </Card>
@@ -85,6 +104,65 @@ function Archive() {
   )
 }
 
+function isValidSizeCheckConfig(value) {
+  try {
+    const obj = JSON.parse(value)
+    if (!obj) return false
+    if (!obj.files) return false
+    if (!Array.isArray(obj.files)) return false
+    if (!obj.files.every(fileRule => fileRule.test && fileRule.maxSize))
+      return false
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+function SizeCheck() {
+  const repository = useRepository()
+  const updateRepository = useUpdateRepository()
+  const [sizeCheckConfig, setSizeCheckConfig] = React.useState(
+    repository.sizeCheckConfig,
+  )
+  const [updated, setUpdated] = React.useState(false)
+  const [invalid, setInvalid] = React.useState(false)
+
+  return (
+    <Card>
+      <CardBody>
+        <CardTitle>Size check</CardTitle>
+        <CardText>Configuration of size checks.</CardText>
+        <Textarea
+          value={sizeCheckConfig}
+          onChange={event => {
+            const { value } = event.target
+            setSizeCheckConfig(value)
+            if (isValidSizeCheckConfig(value)) {
+              setInvalid(false)
+              updateRepository({
+                variables: {
+                  repository: {
+                    id: repository.id,
+                    sizeCheckConfig: value,
+                  },
+                },
+              }).then(() => setUpdated(true))
+            } else {
+              setInvalid(true)
+            }
+          }}
+          rows={10}
+        />
+        {invalid ? (
+          <SmallAlert mt={2} variant="invalid" />
+        ) : updated ? (
+          <SmallAlert mt={2} variant="updated" />
+        ) : null}
+      </CardBody>
+    </Card>
+  )
+}
+
 export function RepositorySettings() {
   const repository = useRepository()
   return (
@@ -100,7 +178,24 @@ export function RepositorySettings() {
           </CardBody>
         </Card>
         <BaselineBranch />
+        <SizeCheck />
         <Archive />
+        <Card>
+          <CardBody>
+            <CardTitle>Delete project</CardTitle>
+            <CardText>
+              To delete project, remove the access from your GitHub app.
+            </CardText>
+            <Button
+              as="a"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/apps/bundle-analyzer"
+            >
+              Continue to GitHub to manage repository integration
+            </Button>
+          </CardBody>
+        </Card>
       </Boxer>
     </Container>
   )

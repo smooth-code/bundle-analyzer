@@ -13,6 +13,7 @@ export const typeDefs = gql`
     active: Boolean!
     archived: Boolean!
     overviewBuild: Build
+    sizeCheckConfig: String!
     permissions: [Permission]!
     "Builds associated to the repository"
     builds(first: Int!, after: Int!): BuildResult!
@@ -27,6 +28,7 @@ export const typeDefs = gql`
     id: ID!
     baselineBranch: String
     archived: Boolean
+    sizeCheckConfig: String
   }
 
   extend type Mutation {
@@ -76,6 +78,9 @@ export const resolvers = {
         },
         edges: result.results,
       }
+    },
+    sizeCheckConfig(repository) {
+      return JSON.stringify(repository.sizeCheckConfig, null, 2)
     },
   },
   Query: {
@@ -133,6 +138,10 @@ export const resolvers = {
 
       if (data.archived && !repository.active) {
         throw new Error('Only active repositories can be archived')
+      }
+
+      if (data.sizeCheckConfig) {
+        data.sizeCheckConfig = JSON.parse(data.sizeCheckConfig)
       }
 
       return repository.$query().patchAndFetch(data)

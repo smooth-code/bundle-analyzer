@@ -4,12 +4,7 @@ import { Link } from 'react-router-dom'
 import styled, { Box } from '@xstyled/styled-components'
 import { Query } from 'containers/Apollo'
 import { GoRepo } from 'react-icons/go'
-import {
-  getTotalAssetsSize,
-  getTotalChunksNumber,
-  getTotalModulesNumber,
-  getTotalAssetsNumber,
-} from 'modules/stats'
+import { getTotalAssetsSize } from 'modules/stats'
 import {
   Container,
   Card,
@@ -18,9 +13,7 @@ import {
   CardBody,
   FadeLink,
   FileSize,
-  Loader,
 } from 'components'
-import { StatsLoader } from 'containers/StatsLoader'
 import { useOwner } from './OwnerContext'
 
 const Stat = styled.div`
@@ -39,69 +32,59 @@ export function RepositorySummary({ repository }) {
   if (!repository.overviewBuild) {
     return <div>No info to display</div>
   }
+  const { stats } = repository.overviewBuild
   return (
-    <StatsLoader
-      fallback={
-        <Box textAlign="center">
-          <Loader />
+    <Box>
+      <Box row mx={-4}>
+        <Box
+          col={{ xs: 1, md: 1 / 4 }}
+          px={4}
+          borderRight={1}
+          borderColor="gray600"
+        >
+          <Stat>
+            <StatLabel>Total size</StatLabel>
+            <StatValue>
+              <FileSize>{getTotalAssetsSize(stats)}</FileSize>
+            </StatValue>
+          </Stat>
         </Box>
-      }
-      url={repository.overviewBuild.webpackStatsUrl}
-    >
-      {stats => (
-        <Box>
-          <Box row mx={-4}>
-            <Box
-              col={{ xs: 1, md: 1 / 4 }}
-              px={4}
-              borderRight={1}
-              borderColor="gray600"
-            >
-              <Stat>
-                <StatLabel>Total size</StatLabel>
-                <StatValue>
-                  <FileSize>{getTotalAssetsSize(stats)}</FileSize>
-                </StatValue>
-              </Stat>
-            </Box>
-            <Box
-              col={{ xs: 1, md: 1 / 4 }}
-              px={4}
-              borderRight={1}
-              borderColor="gray600"
-            >
-              <Stat>
-                <StatLabel>Chunks</StatLabel>
-                <StatValue>
-                  <FileSize>{getTotalChunksNumber(stats)}</FileSize>
-                </StatValue>
-              </Stat>
-            </Box>
-            <Box
-              col={{ xs: 1, md: 1 / 4 }}
-              px={4}
-              borderRight={1}
-              borderColor="gray600"
-            >
-              <Stat>
-                <StatLabel>Modules</StatLabel>
-                <StatValue>
-                  <FileSize>{getTotalModulesNumber(stats)}</FileSize>
-                </StatValue>
-              </Stat>
-            </Box>
-            <Box col={{ xs: 1, md: 1 / 4 }} px={4}>
-              <Stat>
-                <StatLabel>Assets</StatLabel>
-                <StatValue>
-                  <FileSize>{getTotalAssetsNumber(stats)}</FileSize>
-                </StatValue>
-              </Stat>
-            </Box>
-          </Box>
+        <Box
+          col={{ xs: 1, md: 1 / 4 }}
+          px={4}
+          borderRight={1}
+          borderColor="gray600"
+        >
+          <Stat>
+            <StatLabel>Chunks</StatLabel>
+            <StatValue>
+              <FileSize>{stats.chunksNumber}</FileSize>
+            </StatValue>
+          </Stat>
         </Box>
-      )}
-    </StatsLoader>
+        <Box
+          col={{ xs: 1, md: 1 / 4 }}
+          px={4}
+          borderRight={1}
+          borderColor="gray600"
+        >
+          <Stat>
+            <StatLabel>Modules</StatLabel>
+            <StatValue>
+              <FileSize>{stats.modulesNumber}</FileSize>
+            </StatValue>
+          </Stat>
+        </Box>
+        <Box col={{ xs: 1, md: 1 / 4 }} px={4}>
+          <Stat>
+            <StatLabel>Assets</StatLabel>
+            <StatValue>
+              <FileSize>{stats.assets.length}</FileSize>
+            </StatValue>
+          </Stat>
+        </Box>
+      </Box>
+    </Box>
   )
 }
 
@@ -151,7 +134,17 @@ export function OwnerRepositories() {
               archived
               overviewBuild {
                 id
-                webpackStatsUrl
+                stats {
+                  assets {
+                    name
+                    size
+                    gzipSize
+                    brotliSize
+                    chunkNames
+                  }
+                  chunksNumber
+                  modulesNumber
+                }
               }
             }
           }
