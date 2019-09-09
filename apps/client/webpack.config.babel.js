@@ -26,7 +26,7 @@ class BundleAnalyzer {
           const { data: build } = await axios.post(
             'http://localhost:3000/builds',
             {
-              token: 'f9621a9da084f91ebda243c035883269885f4ac3',
+              token: '2700fb9e81d873a3fb2661d66e0031b920fe510c',
               branch: 'master',
               commit: 'xxx',
             },
@@ -43,7 +43,7 @@ class BundleAnalyzer {
           })
 
           await axios.post(`http://localhost:3000/builds/${build.id}/start`, {
-            token: 'f9621a9da084f91ebda243c035883269885f4ac3',
+            token: '2700fb9e81d873a3fb2661d66e0031b920fe510c',
           })
         }
 

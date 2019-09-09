@@ -58,7 +58,12 @@ exports.up = async knex => {
         .index()
       table.string('name').notNullable()
       table
-        .boolean('enabled')
+        .boolean('active')
+        .notNullable()
+        .defaultTo(false)
+        .index()
+      table
+        .boolean('archived')
         .notNullable()
         .defaultTo(false)
         .index()

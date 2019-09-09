@@ -110,6 +110,32 @@ const Title = styled.h3`
   font-weight: medium;
 `
 
+function PassiveRepositories({ title, repositories }) {
+  const owner = useOwner()
+  if (!repositories.length) return null
+  return (
+    <>
+      <Title>{title}</Title>
+      {repositories.map(repository => (
+        <Box col={1} py={2} key={repository.id}>
+          <Card>
+            <CardBody p={2} display="flex" alignItems="center">
+              <Box as={GoRepo} color="white" mr={2} />
+              <FadeLink
+                forwardedAs={Link}
+                color="white"
+                to={`/gh/${owner.login}/${repository.name}`}
+              >
+                {repository.name}
+              </FadeLink>
+            </CardBody>
+          </Card>
+        </Box>
+      ))}
+    </>
+  )
+}
+
 export function OwnerRepositories() {
   const owner = useOwner()
   return (
@@ -122,6 +148,7 @@ export function OwnerRepositories() {
               id
               name
               active
+              archived
               overviewBuild {
                 id
                 webpackStatsUrl
@@ -141,10 +168,13 @@ export function OwnerRepositories() {
           )
         }
         const activeRepositories = repositories.filter(
-          repository => repository.active,
+          repository => repository.active && !repository.archived,
         )
         const inactiveRepositories = repositories.filter(
-          repository => !repository.active,
+          repository => !repository.active && !repository.archived,
+        )
+        const archivedRepositories = repositories.filter(
+          repository => repository.archived,
         )
         return (
           <Container my={4}>
@@ -168,25 +198,14 @@ export function OwnerRepositories() {
                   </Card>
                 </Box>
               ))}
-              {inactiveRepositories.length > 0 && (
-                <Title>Inactive repositories</Title>
-              )}
-              {inactiveRepositories.map(repository => (
-                <Box col={1} py={2} key={repository.id}>
-                  <Card>
-                    <CardBody p={2} display="flex" alignItems="center">
-                      <Box as={GoRepo} color="white" mr={2} />
-                      <FadeLink
-                        forwardedAs={Link}
-                        color="white"
-                        to={`/gh/${owner.login}/${repository.name}`}
-                      >
-                        {repository.name}
-                      </FadeLink>
-                    </CardBody>
-                  </Card>
-                </Box>
-              ))}
+              <PassiveRepositories
+                title="Inactive repositories"
+                repositories={inactiveRepositories}
+              />
+              <PassiveRepositories
+                title="Archived repositories"
+                repositories={archivedRepositories}
+              />
             </Box>
           </Container>
         )

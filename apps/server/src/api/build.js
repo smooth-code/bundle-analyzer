@@ -69,6 +69,10 @@ router.post(
       throw new HttpError(400, 'build already started')
     }
 
+    if (!req.repository.active) {
+      await req.repository.$query().patch({ active: true })
+    }
+
     build = await build.$query()
     await buildJob.push(build.id)
 

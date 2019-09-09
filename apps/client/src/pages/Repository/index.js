@@ -17,7 +17,11 @@ import {
 } from 'components'
 import { Query } from 'containers/Apollo'
 import { useRouter } from 'containers/Router'
-import { RepositoryProvider, useRepository } from './RepositoryContext'
+import {
+  RepositoryProvider,
+  RepositoryContextFragment,
+  useRepository,
+} from './RepositoryContext'
 import { RepositoryOverview } from './Overview'
 import { RepositoryBuilds } from './Builds'
 import { RepositorySettings } from './Settings'
@@ -83,22 +87,11 @@ export function Repository({
       query={gql`
         query Repository($ownerLogin: String!, $name: String!) {
           repository(ownerLogin: $ownerLogin, name: $name) {
-            id
-            name
-            token
-            permissions
-            baselineBranch
-            owner {
-              id
-              name
-              login
-            }
-            overviewBuild {
-              id
-              webpackStatsUrl
-            }
+            ...RepositoryContextFragment
           }
         }
+
+        ${RepositoryContextFragment}
       `}
       variables={{ ownerLogin, name: repositoryName }}
     >

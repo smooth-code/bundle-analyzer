@@ -116,7 +116,6 @@ export class GitHubSynchronizer {
           repository = await Repository.query().insert({
             ...data,
             baselineBranch: githubRepository.default_branch,
-            enabled: false,
           })
         }
 

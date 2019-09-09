@@ -11,6 +11,7 @@ export const typeDefs = gql`
     owner: Owner!
     baselineBranch: String!
     active: Boolean!
+    archived: Boolean!
     overviewBuild: Build
     permissions: [Permission]!
     "Builds associated to the repository"
@@ -25,6 +26,7 @@ export const typeDefs = gql`
   input RepositoryUpdate {
     id: ID!
     baselineBranch: String
+    archived: Boolean
   }
 
   extend type Mutation {
@@ -58,9 +60,6 @@ export const resolvers = {
         context.user,
       )
       return hasWritePermission ? ['read', 'write'] : ['read']
-    },
-    active(repository) {
-      return repository.enabled
     },
     async builds(repository, args) {
       const result = await repository
@@ -112,11 +111,13 @@ export const resolvers = {
   },
   Mutation: {
     async updateRepository(rootObj, args, context) {
+      const { id, ...data } = args.repository
+
       if (!context.user) {
         throw new Error('Forbidden')
       }
 
-      const repository = await Repository.query().findById(args.repository.id)
+      const repository = await Repository.query().findById(id)
 
       if (!repository) {
         throw new Error('Repository not found')
@@ -130,7 +131,9 @@ export const resolvers = {
         throw new Error('Forbidden')
       }
 
-      const { id, ...data } = args.repository
+      if (data.archived && !repository.active) {
+        throw new Error('Only active repositories can be archived')
+      }
 
       return repository.$query().patchAndFetch(data)
     },

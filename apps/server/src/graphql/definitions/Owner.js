@@ -63,7 +63,7 @@ export const resolvers = {
           )
 
         if (args.active !== undefined) {
-          return repositoriesQuery.where({ enabled: args.active })
+          return repositoriesQuery.where({ active: args.active })
         }
 
         return repositoriesQuery
@@ -94,7 +94,7 @@ export const resolvers = {
         )
 
       if (args.active !== undefined) {
-        return repositoriesQuery.where({ enabled: args.active })
+        return repositoriesQuery.where({ active: args.active })
       }
 
       return repositoriesQuery
