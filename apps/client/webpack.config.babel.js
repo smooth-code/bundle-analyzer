@@ -34,7 +34,7 @@ async function sizeAssets(stats) {
 
 class BundleAnalyzer {
   apply(compiler) {
-    compiler.hooks.emit.tapAsync(
+    compiler.hooks.afterEmit.tapAsync(
       '@bundle-analyzer/webpack-plugin',
       (hookCompiler, callback) => {
         const stats = hookCompiler.getStats().toJson({
@@ -49,8 +49,8 @@ class BundleAnalyzer {
             'http://localhost:3000/builds',
             {
               token: '7ec3fe25a1cf772a95fb94558610b1ece5a899b1',
-              branch: 'master',
-              commit: '632c708634d1c12afd5a068687b04096e585e05c',
+              branch: 'feat',
+              commit: '66e40f862d63c261b84865fb9fa730d005e4f6d3',
               stats: {
                 assets,
                 chunksNumber: stats.chunks.length,

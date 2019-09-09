@@ -42,12 +42,37 @@ router.post(
       throw new HttpError(400, 'commit is required')
     }
 
+    const [installation] = await req.repository.$relatedQuery('installations')
+    if (!installation) {
+      throw new HttpError(400, `Installation not found for repository`)
+    }
+
+    const owner = await req.repository.$relatedOwner()
+
+    const octokit = getInstallationOctokit(installation)
+
+    const { data } = await octokit.repos.getCommit({
+      owner: owner.login,
+      repo: req.repository.name,
+      ref: req.body.commit,
+    })
+
     const build = await Build.query().insertAndFetch({
       jobStatus: 'pending',
       repositoryId: req.repository.id,
       branch: req.body.branch,
       commit: req.body.commit,
       stats: req.body.stats,
+      commitInfo: {
+        sha: data.sha,
+        message: data.commit.message,
+        author: {
+          id: data.author.id,
+          name: data.commit.author.name,
+          login: data.author.login,
+          avatarUrl: data.author.avatar_url,
+        },
+      },
     })
 
     res.send({

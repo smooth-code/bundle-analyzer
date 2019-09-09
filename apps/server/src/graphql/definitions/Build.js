@@ -2,6 +2,11 @@ import gql from 'graphql-tag'
 import { Build } from '../../models'
 
 export const typeDefs = gql`
+  enum BuildConclusion {
+    success
+    failure
+  }
+
   type BuildStatAsset {
     name: String!
     size: Int!
@@ -16,13 +21,30 @@ export const typeDefs = gql`
     modulesNumber: Int!
   }
 
+  type CommitAuthor {
+    id: ID!
+    name: String!
+    avatarUrl: String!
+    login: String
+  }
+
+  type Commit {
+    sha: ID!
+    message: String!
+    author: CommitAuthor!
+  }
+
   type Build {
     id: ID!
+    createdAt: DateTime!
     branch: String!
     commit: String!
     number: Int!
     webpackStatsUrl: String!
     stats: BuildStat!
+    jobStatus: JobStatus!
+    conclusion: BuildConclusion
+    commitInfo: Commit!
   }
 
   type BuildResult {

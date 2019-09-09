@@ -18,6 +18,7 @@
     "gzip-size": "^5.1.1",
     "lodash.isequal": "^4.5.0",
     "lodash.unionby": "^4.8.0",
+    "moment": "^2.24.0",
     "omit-deep": "^0.3.0",
     "polished": "^3.4.1",
     "prop-types": "^15.7.2",

@@ -48,6 +48,9 @@ export class Repository extends BaseModel {
         },
         to: 'installations.id',
       },
+      modify(builder) {
+        return builder.where({ deleted: false })
+      },
     },
     organization: {
       relation: BaseModel.BelongsToOneRelation,

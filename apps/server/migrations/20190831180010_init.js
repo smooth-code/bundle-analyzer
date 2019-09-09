@@ -162,6 +162,7 @@ exports.up = async knex => {
       table.integer('github_check_run_id')
       table.string('conclusion').index()
       table.json('stats').notNullable()
+      table.json('commit_info').notNullable()
     })
     .createTable('user_installation_rights', table => {
       table
