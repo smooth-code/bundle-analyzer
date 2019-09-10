@@ -1,5 +1,6 @@
 import { BaseModel, mergeSchemas } from './util'
 import s3 from '../services/s3'
+import config from '../config'
 
 const NEXT_NUMBER = Symbol('nextNumber')
 
@@ -40,14 +41,14 @@ export class Build extends BaseModel {
 
   static getWebpackStatsPutUrl(buildId) {
     return s3.getSignedUrl('putObject', {
-      Bucket: 'bundle-analyzer-development',
+      Bucket: config.get('s3.bucket'),
       Key: Build.getWebpackStatsPath(buildId),
     })
   }
 
   static getWebpackStatsGetUrl(buildId) {
     return s3.getSignedUrl('getObject', {
-      Bucket: 'bundle-analyzer-development',
+      Bucket: config.get('s3.bucket'),
       Key: Build.getWebpackStatsPath(buildId),
     })
   }

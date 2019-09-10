@@ -72,6 +72,12 @@ const config = convict({
       default: '',
       env: 'S3_SECRET_KEY',
     },
+    bucket: {
+      doc: 'AWS S3 bucket',
+      format: String,
+      default: 'bundle-analyzer-development',
+      env: 'S3_BUCKET',
+    },
   },
   github: {
     appId: {
