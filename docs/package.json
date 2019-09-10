@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docz:dev": "docz dev",
-    "docz:build": "docz build"
+    "docz:build": "docz build && cp _redirects .docz/dist"
   },
   "dependencies": {
     "docz": "^2.0.0-rc.38",
