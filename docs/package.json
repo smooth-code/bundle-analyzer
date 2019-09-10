@@ -1,0 +1,14 @@
+{
+  "name": "docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "docz:dev": "docz dev",
+    "docz:build": "docz build"
+  },
+  "dependencies": {
+    "docz": "^2.0.0-rc.38",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
+  }
+}
