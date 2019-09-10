@@ -5,7 +5,7 @@ import 'dotenv/config'
 import path from 'path'
 import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import BundleAnalyzerWebpackPlugin from '@bundle-analyzer/webpack-plugin'
+// import BundleAnalyzerWebpackPlugin from '@bundle-analyzer/webpack-plugin'
 
 const DIST_PATH = path.resolve(__dirname, 'dist')
 const prod = process.env.NODE_ENV === 'production'
@@ -43,9 +43,9 @@ export default {
     }),
     ...(prod
       ? [
-          new BundleAnalyzerWebpackPlugin({
-            token: '7ec3fe25a1cf772a95fb94558610b1ece5a899b1',
-          }),
+          // new BundleAnalyzerWebpackPlugin({
+          //   token: '7ec3fe25a1cf772a95fb94558610b1ece5a899b1',
+          // }),
         ]
       : []),
   ],

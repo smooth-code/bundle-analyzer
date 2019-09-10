@@ -29,7 +29,8 @@
     "styled-components": "^4.3.2"
   },
   "scripts": {
-    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server",
+    "build": "NODE_ENV=production webpack"
   },
   "browserslist": {
     "production": [
