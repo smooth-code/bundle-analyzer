@@ -98,6 +98,26 @@ const config = convict({
       env: 'GITHUB_CLIENT_SECRET',
     },
   },
+  sentry: {
+    environment: {
+      doc: 'Sentry environment',
+      format: String,
+      default: 'development',
+      env: 'NODE_ENV',
+    },
+    dsn: {
+      doc: 'Sentry DSN',
+      format: String,
+      default: '',
+      env: 'SENTRY_SERVER_DSN',
+    },
+    release: {
+      doc: 'Sentry release version',
+      format: String,
+      default: '',
+      env: 'HEROKU_SLUG_COMMIT',
+    },
+  },
 })
 
 const env = config.get('env')

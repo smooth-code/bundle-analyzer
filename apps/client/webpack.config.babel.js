@@ -111,7 +111,14 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: path.join('src/index.html') }),
-    new webpack.EnvironmentPlugin(['GITHUB_CLIENT_ID']),
+    new webpack.EnvironmentPlugin([
+      'GITHUB_CLIENT_ID',
+      'SENTRY_CLIENT_DSN',
+      'SENTRY_ENVIRONMENT',
+    ]),
+    new webpack.EnvironmentPlugin({
+      SENTRY_RELEASE: process.env.HEROKU_SLUG_COMMIT || '',
+    }),
     ...(prod ? [new BundleAnalyzer()] : []),
   ],
   devServer: {

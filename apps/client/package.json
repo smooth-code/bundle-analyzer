@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "@apollo/react-hooks": "^3.0.1",
+    "@sentry/browser": "^5.6.3",
     "@smooth-ui/core-sc": "^11.0.2",
     "@xstyled/styled-components": "^1.11.0",
     "@xstyled/system": "^1.11.0",
