@@ -5,7 +5,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"heroku local -f Procfile.dev -p 3000\" \"yarn workspace client dev\"",
-    "smee": "smee --url https://smee.io/8hyGlwoDt5131zV --path /event-handler --port 3000"
+    "smee": "smee --url https://smee.io/8hyGlwoDt5131zV --path /event-handler --port 3000",
+    "heroku-postbuild": "yarn workspace server run build"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
