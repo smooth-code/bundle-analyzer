@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useAuth } from '../containers/Auth'
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: process.env.API_BASE_URL,
 })
 
 export function AuthCallback({ location, history }) {

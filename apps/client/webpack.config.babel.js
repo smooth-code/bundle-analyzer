@@ -37,6 +37,7 @@ export default {
       'GITHUB_CLIENT_ID',
       'SENTRY_CLIENT_DSN',
       'SENTRY_ENVIRONMENT',
+      'API_BASE_URL',
     ]),
     new webpack.EnvironmentPlugin({
       SENTRY_RELEASE: process.env.HEROKU_SLUG_COMMIT || '',
