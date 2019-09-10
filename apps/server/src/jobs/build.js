@@ -1,13 +1,7 @@
-// import axios from 'axios'
 import { Build } from '../models'
 import { createModelJob } from '../modules/jobs'
 import { getInstallationOctokit } from '../modules/github/client'
-import { matchAssets, checkAssets } from '../modules/size-check'
-
-// async function getStats(build) {
-//   const statsUrl = Build.getWebpackStatsGetUrl(build.id)
-//   return axios.get(statsUrl).then(res => res.data)
-// }
+import { getSizeReport, getGithubCheckInfo } from '../modules/size-check'
 
 export async function runBuild(build) {
   const repository = await build.$relatedQuery('repository')
@@ -28,17 +22,17 @@ export async function runBuild(build) {
     status: 'in_progress',
   })
 
-  const assets = matchAssets(repository.sizeCheckConfig, build.stats.assets)
-  const { title, summary, conclusion } = checkAssets(assets)
+  const sizeReport = getSizeReport(build)
+  const { title, summary } = getGithubCheckInfo(sizeReport)
 
-  await build.$query().patch({ conclusion })
+  await build.$query().patch({ conclusion: sizeReport.conclusion })
 
   await octokit.checks.update({
     owner: owner.login,
     repo: repository.name,
     check_run_id: build.githubCheckRunId,
     status: 'completed',
-    conclusion,
+    conclusion: sizeReport.conclusion,
     output: {
       title,
       summary,

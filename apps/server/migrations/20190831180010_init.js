@@ -163,6 +163,7 @@ exports.up = async knex => {
       table.string('conclusion').index()
       table.json('stats').notNullable()
       table.json('commit_info').notNullable()
+      table.json('size_check_config').notNullable()
     })
     .createTable('user_installation_rights', table => {
       table

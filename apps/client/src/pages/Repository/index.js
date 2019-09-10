@@ -1,6 +1,6 @@
 import React from 'react'
 import gql from 'graphql-tag'
-import { Route, Link } from 'react-router-dom'
+import { Route, Link, Switch } from 'react-router-dom'
 import styled, { Box } from '@xstyled/styled-components'
 import { GoRepo } from 'react-icons/go'
 import { FaGithub } from 'react-icons/fa'
@@ -25,6 +25,8 @@ import {
 import { RepositoryOverview } from './Overview'
 import { RepositoryBuilds } from './Builds'
 import { RepositorySettings } from './Settings'
+import { BuildDetail } from './BuildDetail'
+import { NotFound } from '../NotFound'
 
 function hasWritePermission(repository) {
   return repository.permissions.includes('write')
@@ -114,14 +116,27 @@ export function Repository({
           <RepositoryProvider repository={repository}>
             <>
               <RepositoryHeader />
-              <Route exact path={url} component={RepositoryOverview} />
-              <Route path={`${url}/builds`} component={RepositoryBuilds} />
-              {hasWritePermission(repository) ? (
+              <Switch>
+                <Route exact path={url} component={RepositoryOverview} />
                 <Route
-                  path={`${url}/settings`}
-                  component={RepositorySettings}
+                  exact
+                  path={`${url}/builds/:buildNumber(\\d+)`}
+                  component={BuildDetail}
                 />
-              ) : null}
+                <Route
+                  exact
+                  path={`${url}/builds`}
+                  component={RepositoryBuilds}
+                />
+                {hasWritePermission(repository) ? (
+                  <Route
+                    exact
+                    path={`${url}/settings`}
+                    component={RepositorySettings}
+                  />
+                ) : null}
+                <Route component={NotFound} />
+              </Switch>
             </>
           </RepositoryProvider>
         )

@@ -57,9 +57,7 @@ export function RepositorySummary({ repository }) {
         >
           <Stat>
             <StatLabel>Chunks</StatLabel>
-            <StatValue>
-              <FileSize>{stats.chunksNumber}</FileSize>
-            </StatValue>
+            <StatValue>{stats.chunksNumber}</StatValue>
           </Stat>
         </Box>
         <Box
@@ -70,17 +68,13 @@ export function RepositorySummary({ repository }) {
         >
           <Stat>
             <StatLabel>Modules</StatLabel>
-            <StatValue>
-              <FileSize>{stats.modulesNumber}</FileSize>
-            </StatValue>
+            <StatValue>{stats.modulesNumber}</StatValue>
           </Stat>
         </Box>
         <Box col={{ xs: 1, md: 1 / 4 }} px={4}>
           <Stat>
             <StatLabel>Assets</StatLabel>
-            <StatValue>
-              <FileSize>{stats.assets.length}</FileSize>
-            </StatValue>
+            <StatValue>{stats.assets.length}</StatValue>
           </Stat>
         </Box>
       </Box>

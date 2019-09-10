@@ -63,6 +63,7 @@ router.post(
       branch: req.body.branch,
       commit: req.body.commit,
       stats: req.body.stats,
+      sizeCheckConfig: req.repository.sizeCheckConfig,
       commitInfo: {
         sha: data.sha,
         message: data.commit.message,

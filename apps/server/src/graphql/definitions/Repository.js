@@ -37,6 +37,33 @@ export const typeDefs = gql`
   }
 `
 
+export async function getRepository({ ownerLogin, name, user }) {
+  const owner = await getOwner({ login: ownerLogin })
+  if (!owner) return null
+
+  const repository = await Repository.query()
+    .where({
+      [`${owner.type()}Id`]: owner.id,
+      name,
+    })
+    .whereExists(builder =>
+      builder
+        .select('*')
+        .from('installation_repository_rights')
+        .whereRaw(
+          'repositories.id = installation_repository_rights.repository_id',
+        ),
+    )
+    .first()
+
+  if (!repository) return null
+
+  const hasReadPermission = await repository.$checkReadPermission(user)
+  if (!hasReadPermission) return null
+
+  return repository
+}
+
 export const resolvers = {
   Repository: {
     async token(repository, args, context) {
@@ -85,33 +112,11 @@ export const resolvers = {
   },
   Query: {
     async repository(rootObj, args, context) {
-      const owner = await getOwner({ login: args.ownerLogin })
-      if (!owner) return null
-
-      const repository = await Repository.query()
-        .where({
-          [`${owner.type()}Id`]: owner.id,
-          name: args.name,
-        })
-        .whereExists(builder =>
-          builder
-            .select('*')
-            .from('installation_repository_rights')
-            .whereRaw(
-              'repositories.id = installation_repository_rights.repository_id',
-            ),
-        )
-        .first()
-
-      if (!repository) return null
-
-      const hasReadPermission = await repository.$checkReadPermission(
-        context.user,
-      )
-
-      if (!hasReadPermission) return null
-
-      return repository
+      return getRepository({
+        ownerLogin: args.ownerLogin,
+        name: args.name,
+        user: context.user,
+      })
     },
   },
   Mutation: {

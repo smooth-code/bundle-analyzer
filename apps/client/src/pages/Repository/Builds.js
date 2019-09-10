@@ -4,37 +4,17 @@ import gql from 'graphql-tag'
 import { Box } from '@xstyled/styled-components'
 import { Query } from 'containers/Apollo'
 import { Link } from 'react-router-dom'
-import { FaCheck, FaRegClock } from 'react-icons/fa'
+import { FaRegClock } from 'react-icons/fa'
 import { GoGitCommit } from 'react-icons/go'
 import moment from 'moment'
 import { Container, Card, CardBody, FadeLink } from 'components'
+import { getBuildStatus, getStatusColor } from 'modules/build'
+import { StatusIcon } from 'containers/StatusIcon'
 import { useRepository } from './RepositoryContext'
 import { RepositoryEmpty } from './Empty'
 
-function getBuildStatus(build) {
-  if (build.jobStatus === 'complete') {
-    return build.conclusion === 'success' ? 'success' : 'failure'
-  }
-  return 'pending'
-}
-
-function getBuildStatusColor(status) {
-  switch (status) {
-    case 'success':
-      return 'success'
-    case 'failure':
-      return 'danger'
-    case 'pending':
-    default:
-      return 'warning'
-  }
-}
-
 export function RepositoryBuilds() {
   const repository = useRepository()
-  if (!repository.overviewBuild) {
-    return <RepositoryEmpty />
-  }
   return (
     <Query
       query={gql`
@@ -71,11 +51,14 @@ export function RepositoryBuilds() {
       variables={{ ownerLogin: repository.owner.login, name: repository.name }}
     >
       {({ repository: { builds } }) => {
+        if (!builds.pageInfo.totalCount) {
+          return <RepositoryEmpty />
+        }
         return (
           <Container my={4}>
             {builds.edges.map(build => {
               const buildStatus = getBuildStatus(build)
-              const buildColor = getBuildStatusColor(buildStatus)
+              const buildColor = getStatusColor(buildStatus)
               return (
                 <Box col={1} py={2} key={build.id}>
                   <Card borderLeft={2} borderColor={buildColor}>
@@ -89,7 +72,7 @@ export function RepositoryBuilds() {
                             display="flex"
                             alignItems="center"
                           >
-                            <Box forwardedAs={FaCheck} mr={2} />
+                            <StatusIcon status={buildStatus} mr={2} />
                             {build.branch}
                           </FadeLink>
                           <Box mt={1} display="flex" alignItems="center">

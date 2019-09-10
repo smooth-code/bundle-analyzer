@@ -1,6 +1,7 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import { useMutation } from '@apollo/react-hooks'
+import { BuildDetailFragment } from './BuildDetail'
 
 export const RepositoryContextFragment = gql`
   fragment RepositoryContextFragment on Repository {
@@ -18,20 +19,11 @@ export const RepositoryContextFragment = gql`
       login
     }
     overviewBuild {
-      id
-      stats {
-        assets {
-          name
-          size
-          gzipSize
-          brotliSize
-          chunkNames
-        }
-        chunksNumber
-        modulesNumber
-      }
+      ...BuildDetailFragment
     }
   }
+
+  ${BuildDetailFragment}
 `
 
 const RepositoryContext = React.createContext()
