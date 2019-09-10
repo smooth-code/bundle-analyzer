@@ -64,7 +64,7 @@ export function RepositoryBuilds() {
                   <Card borderLeft={2} borderColor={buildColor}>
                     <CardBody p={2} fontSize={14}>
                       <Box row>
-                        <Box col={1 / 6}>
+                        <Box col={{ xs: 2 / 6, md: 1 / 6 }}>
                           <FadeLink
                             forwardedAs={Link}
                             color={buildColor}
@@ -88,8 +88,10 @@ export function RepositoryBuilds() {
                             {build.commitInfo.author.name}
                           </Box>
                         </Box>
-                        <Box col={3 / 6}>{build.commitInfo.message}</Box>
-                        <Box col={1 / 6}>
+                        <Box col={3 / 6} display={{ xs: 'none', md: 'block' }}>
+                          {build.commitInfo.message}
+                        </Box>
+                        <Box col={{ xs: 2 / 6, md: 1 / 6 }}>
                           <FadeLink
                             forwardedAs={Link}
                             color={buildColor}
@@ -109,7 +111,11 @@ export function RepositoryBuilds() {
                             {build.commit.slice(0, 7)}
                           </FadeLink>
                         </Box>
-                        <Box col={1 / 6} display="flex" alignItems="center">
+                        <Box
+                          col={{ xs: 2 / 6, md: 1 / 6 }}
+                          display="flex"
+                          alignItems="center"
+                        >
                           <Box forwardedAs={FaRegClock} mr={2} />
                           {moment(build.createdAt).fromNow()}
                         </Box>

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react'
+import { Box } from '@xstyled/styled-components'
 import {
   Container,
   Card,
@@ -27,9 +28,9 @@ export function RepositoryEmpty() {
         <CardBody>
           <CardTitle>Setup Bundle Analyzer on this project</CardTitle>
           <CardText>TODO: document how to setup the project.</CardText>
-          <pre>
+          <Box overflow="auto">
             <Code>BUNDLE_ANALYZER_TOKEN={repository.token}</Code>
-          </pre>
+          </Box>
         </CardBody>
       </Card>
     </Container>

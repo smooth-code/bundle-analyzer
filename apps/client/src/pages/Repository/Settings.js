@@ -172,9 +172,7 @@ export function RepositorySettings() {
           <CardBody>
             <CardTitle>Project token</CardTitle>
             <CardText>See the docs for how to set up project.</CardText>
-            <pre>
-              <Code>BUNDLE_ANALYZER_TOKEN={repository.token}</Code>
-            </pre>
+            <Code>BUNDLE_ANALYZER_TOKEN={repository.token}</Code>
           </CardBody>
         </Card>
         <BaselineBranch />

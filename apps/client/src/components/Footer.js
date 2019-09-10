@@ -1,5 +1,6 @@
 import React from 'react'
-import styled from '@xstyled/styled-components'
+import styled, { css } from '@xstyled/styled-components'
+import { up } from '@xstyled/system'
 import { Container } from './Container'
 import { FadeLink } from './Link'
 
@@ -16,6 +17,7 @@ export function FooterBody(props) {
     <Container
       p={3}
       display="flex"
+      flexDirection={{ xs: 'column', md: 'row' }}
       justifyContent="space-between"
       alignItems="center"
       {...props}
@@ -23,7 +25,16 @@ export function FooterBody(props) {
   )
 }
 
-export const FooterPrimary = styled.div``
+export const FooterPrimary = styled.div`
+  margin-bottom: 2;
+
+  ${up(
+    'md',
+    css`
+      margin-bottom: 0;
+    `,
+  )}
+`
 export const FooterSecondary = styled.div`
   margin: 0 -2;
 `
