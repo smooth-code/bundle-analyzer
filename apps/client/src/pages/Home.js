@@ -32,7 +32,12 @@ const RepositoryItem = styled.li`
 
 export function Home() {
   const user = useUser()
-  if (!user) return 'TODO: redirect to www'
+  if (!user)
+    return (
+      <Container textAlign="center" my={4}>
+        TODO: redirect the user to www
+      </Container>
+    )
   if (!user.installations.length && !isUserSyncing(user)) {
     return (
       <Container textAlign="center" my={4}>
