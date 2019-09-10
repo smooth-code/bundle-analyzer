@@ -2,19 +2,12 @@ import { Router } from 'express'
 import axios from 'axios'
 import asyncHandler from 'express-async-handler'
 import bodyParser from 'body-parser'
-import cors from 'cors'
 import Octokit from '@octokit/rest'
 import { User } from '../models'
 import config from '../config'
 import { synchronizeFromUserId } from '../jobs/synchronize'
 
 const router = new Router()
-
-const corsOptions = {
-  origin: 'http://localhost:8080',
-}
-
-router.use(cors(corsOptions))
 
 function getDataFromProfile(profile) {
   return {
