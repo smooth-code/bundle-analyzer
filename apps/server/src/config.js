@@ -1,5 +1,6 @@
 import path from 'path'
 import convict from 'convict'
+import url from 'url'
 
 const config = convict({
   env: {
@@ -123,5 +124,18 @@ const config = convict({
 const env = config.get('env')
 config.loadFile(path.join(__dirname, `../config/${env}.json`))
 config.validate()
+
+if (process.env.DATABASE_URL) {
+  const urlParts = url.parse(process.env.DATABASE_URL)
+  const [user, password] = urlParts.auth.split(':')
+
+  config.set('pg.connection.host', urlParts.hostname)
+  config.set('pg.connection.port', urlParts.port)
+  config.set('pg.connection.user', user)
+  config.set('pg.connection.password', password)
+  config.set('pg.connection.database', urlParts.path.substring(1))
+  config.set('pg.connection.ssl', true)
+  config.set('pg.connection.timezone', 'utc')
+}
 
 export default config
