@@ -1,3 +1,3 @@
-web: yarn workspace server dev:web
-synchronize: yarn workspace server dev:synchronize
-build: yarn workspace server dev:build
+web: yarn workspace server run:web
+synchronize: yarn workspace server run:synchronize
+build: yarn workspace server run:build
