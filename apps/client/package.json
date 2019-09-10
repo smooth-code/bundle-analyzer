@@ -1,0 +1,46 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/react-hooks": "^3.0.1",
+    "@bundle-analyzer/webpack-plugin": "^0.1.0",
+    "@sentry/browser": "^5.6.3",
+    "@smooth-ui/core-sc": "^11.0.2",
+    "@xstyled/styled-components": "^1.11.0",
+    "@xstyled/system": "^1.11.0",
+    "apollo-boost": "^0.4.4",
+    "axios": "^0.19.0",
+    "core-js": "^3.2.1",
+    "filesize": "^4.1.2",
+    "graphql": "^14.5.4",
+    "graphql-tag": "^2.10.1",
+    "moment": "^2.24.0",
+    "polished": "^3.4.1",
+    "prop-types": "^15.7.2",
+    "query-string": "^6.8.3",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-icons": "^3.7.0",
+    "react-router-dom": "^5.0.1",
+    "reakit": "^1.0.0-beta.6",
+    "regenerator-runtime": "^0.13.3",
+    "store": "^2.0.12",
+    "styled-components": "^4.3.2"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

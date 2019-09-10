@@ -1,0 +1,8 @@
+{
+  "execMap": {
+    "js": "babel-node"
+  },
+  "env": {
+    "TZ": "utc"
+  }
+}

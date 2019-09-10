@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "@babel/preset-react",
+    [
+      "@babel/preset-env",
+      { "loose": true, "useBuiltIns": "entry", "corejs": 3 }
+    ]
+  ],
+  "plugins": [["module-resolver", { "root": ["./src"] }]]
+}
