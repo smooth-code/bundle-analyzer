@@ -51,11 +51,18 @@ router.post(
 
     const octokit = getInstallationOctokit(installation)
 
-    const { data } = await octokit.repos.getCommit({
-      owner: owner.login,
-      repo: req.repository.name,
-      ref: req.body.commit,
-    })
+    let data
+    try {
+      ;({ data } = await octokit.repos.getCommit({
+        owner: owner.login,
+        repo: req.repository.name,
+        ref: req.body.commit,
+      }))
+    } catch (error) {
+      const httpError = new HttpError(400, 'commit not found on GitHub')
+      httpError.code = 'unknown-commit'
+      throw httpError
+    }
 
     const build = await Build.query().insertAndFetch({
       jobStatus: 'pending',
@@ -64,6 +71,7 @@ router.post(
       commit: req.body.commit,
       stats: req.body.stats,
       sizeCheckConfig: req.repository.sizeCheckConfig,
+      providerMetadata: req.body.providerMetadata,
       commitInfo: {
         sha: data.sha,
         message: data.commit.message,

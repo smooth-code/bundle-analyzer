@@ -802,6 +802,13 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@bundle-analyzer/webpack-plugin@/Users/neoziro/Projects/bundle-analyzer-javascript/packages/webpack-plugin":
+  version "1.0.0"
+  dependencies:
+    axios "^0.19.0"
+    brotli-size "^4.0.0"
+    gzip-size "^5.1.1"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"

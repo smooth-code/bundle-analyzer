@@ -19,6 +19,7 @@ export class Build extends BaseModel {
       stats: { type: 'object' },
       commitInfo: { type: 'object' },
       sizeCheckConfig: { type: 'object' },
+      providerMetadata: { type: 'object' },
     },
   })
 
