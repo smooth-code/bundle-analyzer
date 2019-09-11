@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 import { Normalize } from '@smooth-ui/core-sc'
 import {
@@ -28,6 +29,7 @@ export function App() {
   return (
     <ThemeInitializer>
       <>
+        <Helmet defaultTitle="Bundle Analyzer" />
         <Normalize />
         <GlobalStyle />
         <BrowserRouter>
@@ -54,12 +56,16 @@ export function App() {
                             <Route
                               exact
                               path="/privacy"
-                              render={() => <Markdown>{Privacy}</Markdown>}
+                              render={() => (
+                                <Markdown title="Privacy">{Privacy}</Markdown>
+                              )}
                             />
                             <Route
                               exact
                               path="/terms"
-                              render={() => <Markdown>{Terms}</Markdown>}
+                              render={() => (
+                                <Markdown title="Terms">{Terms}</Markdown>
+                              )}
                             />
                             <Route
                               exact

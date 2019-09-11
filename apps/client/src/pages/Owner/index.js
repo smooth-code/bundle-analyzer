@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import { Route, Link } from 'react-router-dom'
 import { Box } from '@xstyled/styled-components'
 import { FaGithub } from 'react-icons/fa'
+import { Helmet } from 'react-helmet'
 import {
   Header,
   HeaderBody,
@@ -89,6 +90,10 @@ export function Owner({
         return (
           <OwnerProvider owner={owner}>
             <>
+              <Helmet
+                titleTemplate={`%s - ${owner.login}`}
+                defaultTitle={owner.login}
+              />
               <OwnerHeader />
               <Route
                 exact

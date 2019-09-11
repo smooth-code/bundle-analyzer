@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Boxer, Button, Input, Textarea } from '@smooth-ui/core-sc'
+import { Helmet } from 'react-helmet'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import * as Sentry from '@sentry/browser'
 import {
@@ -173,6 +174,9 @@ export function RepositorySettings() {
   const repository = useRepository()
   return (
     <Container>
+      <Helmet>
+        <title>Settings</title>
+      </Helmet>
       <Boxer my={4}>
         <Card>
           <CardBody>

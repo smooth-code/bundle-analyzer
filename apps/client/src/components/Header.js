@@ -15,6 +15,7 @@ export const HeaderTitle = styled.h2`
   margin: 0;
   font-weight: 300;
   display: flex;
+  align-items: center;
   flex: 1;
   font-size: 18;
 

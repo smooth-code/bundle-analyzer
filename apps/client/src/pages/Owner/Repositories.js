@@ -116,87 +116,89 @@ function PassiveRepositories({ title, repositories }) {
 export function OwnerRepositories() {
   const owner = useOwner()
   return (
-    <Query
-      query={gql`
-        query OwnerRepositories($login: String!) {
-          owner(login: $login) {
-            id
-            repositories {
+    <>
+      <Query
+        query={gql`
+          query OwnerRepositories($login: String!) {
+            owner(login: $login) {
               id
-              name
-              active
-              archived
-              overviewBuild {
+              repositories {
                 id
-                stats {
-                  assets {
-                    name
-                    size
-                    gzipSize
-                    brotliSize
-                    chunkNames
+                name
+                active
+                archived
+                overviewBuild {
+                  id
+                  stats {
+                    assets {
+                      name
+                      size
+                      gzipSize
+                      brotliSize
+                      chunkNames
+                    }
+                    chunksNumber
+                    modulesNumber
                   }
-                  chunksNumber
-                  modulesNumber
                 }
               }
             }
           }
-        }
-      `}
-      variables={{ login: owner.login }}
-    >
-      {({ owner: { repositories } }) => {
-        if (!repositories.length) {
+        `}
+        variables={{ login: owner.login }}
+      >
+        {({ owner: { repositories } }) => {
+          if (!repositories.length) {
+            return (
+              <Container my={4} textAlign="center">
+                No repository found for {owner.login}.
+              </Container>
+            )
+          }
+          const activeRepositories = repositories.filter(
+            repository => repository.active && !repository.archived,
+          )
+          const inactiveRepositories = repositories.filter(
+            repository => !repository.active && !repository.archived,
+          )
+          const archivedRepositories = repositories.filter(
+            repository => repository.archived,
+          )
           return (
-            <Container my={4} textAlign="center">
-              No repository found for {owner.login}.
+            <Container my={4}>
+              <Box row my={-2} justifyContent="center">
+                {activeRepositories.map(repository => (
+                  <Box col={1} py={2} key={repository.id}>
+                    <Card>
+                      <CardHeader display="flex" alignItems="center">
+                        <Box as={GoRepo} color="white" mr={2} />
+                        <FadeLink
+                          forwardedAs={Link}
+                          color="white"
+                          to={`/gh/${owner.login}/${repository.name}`}
+                        >
+                          <CardTitle>{repository.name}</CardTitle>
+                        </FadeLink>
+                      </CardHeader>
+                      <CardBody>
+                        <RepositorySummary repository={repository} />
+                      </CardBody>
+                    </Card>
+                  </Box>
+                ))}
+                <PassiveRepositories
+                  title="Inactive repositories"
+                  repositories={inactiveRepositories}
+                />
+                <PassiveRepositories
+                  title="Archived repositories"
+                  repositories={archivedRepositories}
+                />
+              </Box>
             </Container>
           )
-        }
-        const activeRepositories = repositories.filter(
-          repository => repository.active && !repository.archived,
-        )
-        const inactiveRepositories = repositories.filter(
-          repository => !repository.active && !repository.archived,
-        )
-        const archivedRepositories = repositories.filter(
-          repository => repository.archived,
-        )
-        return (
-          <Container my={4}>
-            <Box row my={-2} justifyContent="center">
-              {activeRepositories.map(repository => (
-                <Box col={1} py={2} key={repository.id}>
-                  <Card>
-                    <CardHeader display="flex" alignItems="center">
-                      <Box as={GoRepo} color="white" mr={2} />
-                      <FadeLink
-                        forwardedAs={Link}
-                        color="white"
-                        to={`/gh/${owner.login}/${repository.name}`}
-                      >
-                        <CardTitle>{repository.name}</CardTitle>
-                      </FadeLink>
-                    </CardHeader>
-                    <CardBody>
-                      <RepositorySummary repository={repository} />
-                    </CardBody>
-                  </Card>
-                </Box>
-              ))}
-              <PassiveRepositories
-                title="Inactive repositories"
-                repositories={inactiveRepositories}
-              />
-              <PassiveRepositories
-                title="Archived repositories"
-                repositories={archivedRepositories}
-              />
-            </Box>
-          </Container>
-        )
-      }}
-    </Query>
+        }}
+      </Query>
+    </>
   )
 }

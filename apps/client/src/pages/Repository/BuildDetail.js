@@ -2,6 +2,7 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import styled, { Box } from '@xstyled/styled-components'
+import { Helmet } from 'react-helmet'
 import {
   Container,
   Card,
@@ -299,34 +300,39 @@ export function BuildDetail({
 }) {
   const repository = useRepository()
   return (
-    <Query
-      query={gql`
-        query Build(
-          $ownerLogin: String!
-          $repositoryName: String!
-          $number: Int!
-        ) {
-          build(
-            ownerLogin: $ownerLogin
-            repositoryName: $repositoryName
-            number: $number
+    <>
+      <Helmet>
+        <title>{`Build #${buildNumber}`}</title>
+      </Helmet>
+      <Query
+        query={gql`
+          query Build(
+            $ownerLogin: String!
+            $repositoryName: String!
+            $number: Int!
           ) {
-            ...BuildDetailFragment
+            build(
+              ownerLogin: $ownerLogin
+              repositoryName: $repositoryName
+              number: $number
+            ) {
+              ...BuildDetailFragment
+            }
           }
-        }
 
-        ${BuildDetailFragment}
-      `}
-      variables={{
-        ownerLogin: repository.owner.login,
-        repositoryName: repository.name,
-        number: Number(buildNumber),
-      }}
-    >
-      {({ build }) => {
-        if (!build) return <NotFound />
-        return <Build build={build} />
-      }}
-    </Query>
+          ${BuildDetailFragment}
+        `}
+        variables={{
+          ownerLogin: repository.owner.login,
+          repositoryName: repository.name,
+          number: Number(buildNumber),
+        }}
+      >
+        {({ build }) => {
+          if (!build) return <NotFound />
+          return <Build build={build} />
+        }}
+      </Query>
+    </>
   )
 }

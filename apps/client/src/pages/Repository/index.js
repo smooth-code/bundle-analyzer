@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import gql from 'graphql-tag'
 import { Route, Link, Switch } from 'react-router-dom'
 import styled, { Box } from '@xstyled/styled-components'
@@ -12,8 +13,6 @@ import {
   HeaderSecondaryLink,
   TabList,
   RouterTabItem,
-  Container,
-  FadeLink,
 } from 'components'
 import { Query } from 'containers/Apollo'
 import { useRouter } from 'containers/Router'
@@ -101,20 +100,15 @@ export function Repository({
     >
       {({ repository }) => {
         if (!repository) {
-          return (
-            <Container textAlign="center" my={4}>
-              <p>Repository not found.</p>
-              <p>
-                <FadeLink forwardedAs={Link} color="white" to="/">
-                  Back to home
-                </FadeLink>
-              </p>
-            </Container>
-          )
+          return <NotFound />
         }
         return (
           <RepositoryProvider repository={repository}>
             <>
+              <Helmet
+                titleTemplate={`%s - ${repository.owner.login}/${repository.name}`}
+                defaultTitle={`${repository.owner.login}/${repository.name}`}
+              />
               <RepositoryHeader />
               <Switch>
                 <Route exact path={url} component={RepositoryOverview} />

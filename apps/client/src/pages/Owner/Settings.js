@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { Boxer, Button } from '@smooth-ui/core-sc'
 import {
   Container,
@@ -11,6 +12,9 @@ import {
 export function OwnerSettings() {
   return (
     <Container>
+      <Helmet>
+        <title>Settings</title>
+      </Helmet>
       <Boxer my={4}>
         <Card>
           <CardBody>
