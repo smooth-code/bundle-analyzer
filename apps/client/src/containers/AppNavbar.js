@@ -34,6 +34,15 @@ function UserMenu({ user }) {
         )}
       </MenuDisclosure>
       <Menu aria-label="User settings" {...menu}>
+        <MenuItem
+          {...menu}
+          forwardedAs="a"
+          href={process.env.GITHUB_APP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Add repository
+        </MenuItem>
         <MenuItem {...menu} onClick={() => logout()}>
           Logout
         </MenuItem>

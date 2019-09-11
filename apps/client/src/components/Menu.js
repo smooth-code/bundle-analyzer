@@ -56,7 +56,7 @@ export const Menu = React.forwardRef(function Menu(
   )
 })
 
-const InnerMenuItem = styled.button`
+const InnerMenuItem = styled.buttonBox`
   appearance: none;
   background-color: transparent;
   padding: 2;
@@ -70,6 +70,8 @@ const InnerMenuItem = styled.button`
   transition: base;
   transition-property: background-color;
   cursor: pointer;
+  /* For links */
+  text-decoration: none;
 
   &:focus,
   &:hover {
