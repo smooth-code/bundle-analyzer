@@ -1,6 +1,7 @@
 import bytes from 'bytes'
 import minimatch from 'minimatch'
 import filesize from 'filesize'
+import Ajv from 'ajv'
 
 function getAssetCompressionSize(asset, compression) {
   switch (compression) {
@@ -74,4 +75,50 @@ export function getGithubCheckInfo(sizeReport) {
       ? 'All assets pass size check'
       : 'Some assets are too big'
   return { title, summary }
+}
+
+const ajv = new Ajv()
+const schema = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $id: 'http://example.com/product.schema.json',
+  title: 'Size Check Config',
+  description: 'The configuration of size checks',
+  type: 'object',
+  required: ['files'],
+  additionalProperties: false,
+  properties: {
+    files: {
+      description: 'The file rules',
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['test', 'maxSize'],
+        additionalProperties: false,
+        properties: {
+          test: {
+            description: 'Glob expression',
+            type: 'string',
+          },
+          maxSize: {
+            description: 'Max size',
+            type: 'string',
+          },
+          compression: {
+            description: 'Compression',
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
+}
+
+const validate = ajv.compile(schema)
+
+export function validateSizeCheckConfig(sizeCheckConfig) {
+  const validSchema = validate(sizeCheckConfig)
+  if (!validSchema) return false
+  return sizeCheckConfig.files.every(fileRule =>
+    Number.isInteger(bytes(fileRule.maxSize)),
+  )
 }

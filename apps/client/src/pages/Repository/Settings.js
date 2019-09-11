@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Boxer, Button, Input, Textarea } from '@smooth-ui/core-sc'
 import { FaCheck, FaTimes } from 'react-icons/fa'
+import * as Sentry from '@sentry/browser'
 import {
   Container,
   Card,
@@ -15,16 +16,28 @@ function SmallAlert({ variant, ...props }) {
   switch (variant) {
     case 'updated':
       return (
-        <Box role="alert" fontSize={12} {...props}>
+        <Box
+          role="alert"
+          fontSize={12}
+          display="flex"
+          alignItems="center"
+          {...props}
+        >
           <Box forwardedAs={FaCheck} color="success" mr={1} />
           Saved
         </Box>
       )
-    case 'invalid':
+    case 'error':
       return (
-        <Box role="alert" fontSize={12} {...props}>
+        <Box
+          role="alert"
+          fontSize={12}
+          display="flex"
+          alignItems="center"
+          {...props}
+        >
           <Box forwardedAs={FaTimes} color="danger" mr={1} />
-          Invalid
+          Error
         </Box>
       )
     default:
@@ -59,7 +72,9 @@ function BaselineBranch() {
                     baselineBranch: event.target.value,
                   },
                 },
-              }).then(() => setUpdated(true))
+              })
+                .then(() => setUpdated(true))
+                .catch(error => Sentry.captureException(error))
             }}
             maxWidth={200}
           />
@@ -93,6 +108,8 @@ function Archive() {
                   archived: !repository.archived,
                 },
               },
+            }).catch(error => {
+              Sentry.captureException(error)
             })
           }}
           variant="primary"
@@ -104,20 +121,6 @@ function Archive() {
   )
 }
 
-function isValidSizeCheckConfig(value) {
-  try {
-    const obj = JSON.parse(value)
-    if (!obj) return false
-    if (!obj.files) return false
-    if (!Array.isArray(obj.files)) return false
-    if (!obj.files.every(fileRule => fileRule.test && fileRule.maxSize))
-      return false
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
 function SizeCheck() {
   const repository = useRepository()
   const updateRepository = useUpdateRepository()
@@ -125,7 +128,7 @@ function SizeCheck() {
     repository.sizeCheckConfig,
   )
   const [updated, setUpdated] = React.useState(false)
-  const [invalid, setInvalid] = React.useState(false)
+  const [error, setError] = React.useState(false)
 
   return (
     <Card>
@@ -137,24 +140,27 @@ function SizeCheck() {
           onChange={event => {
             const { value } = event.target
             setSizeCheckConfig(value)
-            if (isValidSizeCheckConfig(value)) {
-              setInvalid(false)
-              updateRepository({
-                variables: {
-                  repository: {
-                    id: repository.id,
-                    sizeCheckConfig: value,
-                  },
+            setError(false)
+            updateRepository({
+              variables: {
+                repository: {
+                  id: repository.id,
+                  sizeCheckConfig: value,
                 },
-              }).then(() => setUpdated(true))
-            } else {
-              setInvalid(true)
-            }
+              },
+            })
+              .then(() => setUpdated(true))
+              .catch(error => {
+                setError(true)
+                if (!error.message.match(/Invalid size check config/)) {
+                  Sentry.captureException(error)
+                }
+              })
           }}
           rows={10}
         />
-        {invalid ? (
-          <SmallAlert mt={2} variant="invalid" />
+        {error ? (
+          <SmallAlert mt={2} variant="error" />
         ) : updated ? (
           <SmallAlert mt={2} variant="updated" />
         ) : null}

@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
 import { Repository, Build } from '../../models'
 import { getOwner } from './Owner'
+import { validateSizeCheckConfig } from '../../modules/size-check'
 
 export const typeDefs = gql`
   type Repository {
@@ -146,7 +147,14 @@ export const resolvers = {
       }
 
       if (data.sizeCheckConfig) {
-        data.sizeCheckConfig = JSON.parse(data.sizeCheckConfig)
+        try {
+          data.sizeCheckConfig = JSON.parse(data.sizeCheckConfig)
+        } catch (error) {
+          throw new Error('Invalid size check config')
+        }
+        if (!validateSizeCheckConfig(data.sizeCheckConfig)) {
+          throw new Error('Invalid size check config')
+        }
       }
 
       return repository.$query().patchAndFetch(data)

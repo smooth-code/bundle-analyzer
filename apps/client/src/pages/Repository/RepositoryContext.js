@@ -1,6 +1,5 @@
 import React from 'react'
 import gql from 'graphql-tag'
-import * as Sentry from '@sentry/browser'
 import { useMutation } from '@apollo/react-hooks'
 // eslint-disable-next-line import/no-cycle
 import { BuildDetailFragment } from './BuildDetail'
@@ -51,13 +50,7 @@ export function RepositoryProvider({
   const value = React.useMemo(
     () => ({
       repository,
-      updateRepository(...args) {
-        return updateRepository(...args).catch(error => {
-          // eslint-disable-next-line no-console
-          console.error(error)
-          Sentry.captureException(error)
-        })
-      },
+      updateRepository,
     }),
     [repository, updateRepository],
   )
