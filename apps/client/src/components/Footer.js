@@ -4,7 +4,7 @@ import { up } from '@xstyled/system'
 import { Container } from './Container'
 import { FadeLink } from './Link'
 
-export const Footer = styled.footer`
+export const Footer = styled.div`
   background-color: gray800;
   color: white;
   border-top: 1;

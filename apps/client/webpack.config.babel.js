@@ -17,6 +17,11 @@ export default {
   module: {
     rules: [
       {
+        test: /\.md$/,
+        exclude: /node_modules/,
+        use: 'raw-loader',
+      },
+      {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: 'babel-loader',

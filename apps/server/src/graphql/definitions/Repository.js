@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Repository, Build } from '../../models'
+import { Repository } from '../../models'
 import { getOwner } from './Owner'
 import { validateSizeCheckConfig } from '../../modules/size-check'
 
