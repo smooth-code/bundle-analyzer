@@ -152,7 +152,7 @@ export function Build({ build }) {
                     {build.commitInfo.author.name}
                   </Box>
                 </Box>
-                <Box col px={2}>
+                <Box col="auto" px={2}>
                   <Box color={buildColor} display="flex" alignItems="center">
                     <Box forwardedAs={GoPulse} mr={2} />
                     <span>
