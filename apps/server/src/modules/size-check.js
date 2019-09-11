@@ -51,7 +51,7 @@ export function getSizeReport(build) {
 
   return {
     checks,
-    conclusion: checks.some(check => check.conlusion === 'failure')
+    conclusion: checks.some(check => check.conclusion === 'failure')
       ? 'failure'
       : 'success',
   }
