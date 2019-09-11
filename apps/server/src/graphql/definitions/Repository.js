@@ -78,9 +78,9 @@ export const resolvers = {
       return repository.$relatedOwner()
     },
     async overviewBuild(repository) {
-      return Build.query()
+      return repository
+        .$relatedQuery('builds')
         .where({
-          repositoryId: repository.id,
           branch: repository.baselineBranch,
         })
         .first()
