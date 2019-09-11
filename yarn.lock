@@ -806,10 +806,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bundle-analyzer/webpack-plugin@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@bundle-analyzer/webpack-plugin/-/webpack-plugin-0.1.0.tgz#b6e6712c7537e01959b3d16274cc68e68778338a"
-  integrity sha512-489NMX+eD1h0NuGgZWsvVgbIJopYqWujWLbPhANl9NUBefmnORc8+OKhnpW4/Z4fbqpaDje0VPvIxzrNQiI3dw==
+"@bundle-analyzer/webpack-plugin@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@bundle-analyzer/webpack-plugin/-/webpack-plugin-0.2.1.tgz#ab4414f663c21cb7e32de676f4a3d1ae77dab455"
+  integrity sha512-0/58UEw16bjWoQg3LFvllCsHi3mQOCijXpcCqwdmIZ3YEBZhPBxbRjAwPuvKvdOsFUR0W2rbIvUjoOZLcnBeJQ==
   dependencies:
     axios "^0.19.0"
     brotli-size "^4.0.0"
@@ -2184,10 +2184,10 @@ atob@^2.1.1:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.521.0:
-  version "2.525.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.525.0.tgz#220da4ff859947bac9b2d391cae5a459fef3989e"
-  integrity sha512-UgigVfY4ayrffOMbybyz3F1bbIpEhuiO4yfYXultBC1LfIhZaFSFWLqzEBnm9srhydJhfLDftkL0WXVJtfJ4ng==
+aws-sdk@^2.526.0:
+  version "2.526.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.526.0.tgz#e0f899be59edb7d50eb8cca7978bcd401a5d48c2"
+  integrity sha512-ZZqf8AnD9A8ZJd/4oU711R8taxm8sV7wcAOvT0HhrZxv8zASAzoz2lpZ19QAil6uJ52IOkq4ij/zGy7VBXEgPA==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -3787,10 +3787,10 @@ eslint-config-airbnb@^18.0.1:
     object.assign "^4.1.0"
     object.entries "^1.1.0"
 
-eslint-config-prettier@^6.1.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-6.2.0.tgz#80e0b8714e3f6868c4ac2a25fbf39c02e73527a7"
-  integrity sha512-VLsgK/D+S/FEsda7Um1+N8FThec6LqE3vhcMyp8mlmto97y3fGf3DX7byJexGuOb1QY0Z/zz222U5t+xSfcZDQ==
+eslint-config-prettier@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-6.3.0.tgz#e73b48e59dc49d950843f3eb96d519e2248286a3"
+  integrity sha512-EWaGjlDAZRzVFveh2Jsglcere2KK5CJBhkNSa1xs3KfMUGdRiT7lG089eqPdvlzWHpAqaekubOsOMu8W8Yk71A==
   dependencies:
     get-stdin "^6.0.0"
 
