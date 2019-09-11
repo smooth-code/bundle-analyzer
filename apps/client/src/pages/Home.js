@@ -42,7 +42,7 @@ export function Home() {
     return (
       <Container textAlign="center" my={4}>
         <p>Look like you don't have installed Bundle Analyzer GitHub App.</p>
-        <Button as="a" href="https://github.com/apps/bundle-analyzer">
+        <Button as="a" href={process.env.GITHUB_APP_URL}>
           Install Bundle Analyzer GitHub App
         </Button>
       </Container>

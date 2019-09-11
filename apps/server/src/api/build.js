@@ -5,6 +5,7 @@ import bodyParser from 'body-parser'
 import { Build, Repository } from '../models'
 import buildJob from '../jobs/build'
 import { getInstallationOctokit } from '../modules/github/client'
+import config from '../config'
 
 const router = new Router()
 
@@ -124,7 +125,9 @@ router.post(
       head_sha: build.commit,
       external_id: build.id,
       status: 'queued',
-      details_url: `http://localhost:8080/gh/${owner.login}/${req.repository.name}/builds/${build.number}`,
+      details_url: `${config.get('appBaseUrl')}/gh/${owner.login}/${
+        req.repository.name
+      }/builds/${build.number}`,
     })
 
     build = await build

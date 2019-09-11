@@ -9,6 +9,12 @@ const config = convict({
     default: 'development',
     env: 'NODE_ENV',
   },
+  appBaseUrl: {
+    doc: 'Base URL',
+    format: String,
+    default: 'http://localhost:8080',
+    env: 'APP_BASE_URL',
+  },
   server: {
     port: {
       doc: 'The server port number',

@@ -6,12 +6,13 @@ import webhooks from './webhooks'
 import errorHandler from './errorHandler'
 import build from './build'
 import { apolloServer } from '../graphql'
+import config from '../config'
 
 const app = express()
 
 app.use(
   cors({
-    origin: process.env.APP_BASE_URL,
+    origin: config.get('appBaseUrl'),
   }),
 )
 

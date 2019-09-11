@@ -188,7 +188,7 @@ export function RepositorySettings() {
               as="a"
               target="_blank"
               rel="noopener noreferrer"
-              href="https://github.com/apps/bundle-analyzer"
+              href={process.env.GITHUB_APP_URL}
             >
               Continue to GitHub to manage repository integration
             </Button>
