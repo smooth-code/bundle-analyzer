@@ -36,6 +36,7 @@ export default {
   resolve: {
     extensions: ['.js', '.jsx'],
   },
+  devtool: prod ? 'source-map' : false,
   plugins: [
     new HtmlWebpackPlugin({ template: path.join('src/index.html') }),
     new webpack.EnvironmentPlugin([

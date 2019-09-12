@@ -6,7 +6,7 @@
     "dev:web": "nodemon src/workers/web.js",
     "dev:synchronize": "nodemon src/workers/synchronize.js",
     "dev:build": "nodemon src/workers/build.js",
-    "build": "babel -d lib src",
+    "build": "babel -d lib src --source-maps inline",
     "run:web": "node lib/workers/web.js",
     "run:synchronize": "node lib/workers/synchronize.js",
     "run:build": "node lib/workers/build.js",
