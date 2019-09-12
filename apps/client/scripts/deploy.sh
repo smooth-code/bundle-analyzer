@@ -3,5 +3,5 @@ set -e
 yarn workspace client build
 
 if [[ $HEAD = "master" ]]; then
-  ./apps/client/release.sh
+  ./apps/client/scripts/release.sh
 fi
