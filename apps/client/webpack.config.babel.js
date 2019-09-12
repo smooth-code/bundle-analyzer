@@ -46,7 +46,7 @@ export default {
       'GITHUB_APP_URL',
     ]),
     new webpack.EnvironmentPlugin({
-      SENTRY_RELEASE: process.env.HEROKU_SLUG_COMMIT || '',
+      SENTRY_RELEASE: process.env.COMMIT_REF || '',
     }),
     ...(prod
       ? [

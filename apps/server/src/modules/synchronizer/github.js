@@ -16,6 +16,15 @@ import {
 } from '../../models'
 import config from '../../config'
 
+export async function getOrCreateInstallation(payload) {
+  const installation = await Installation.query()
+    .where({ githubId: payload.githubId })
+    .first()
+
+  if (installation) return installation
+  return Installation.query().insertAndFetch(payload)
+}
+
 async function checkAccessTokenValidity(accessToken) {
   try {
     await authorizationOctokit.oauthAuthorizations.checkAuthorization({
@@ -328,15 +337,22 @@ export class GitHubSynchronizer {
     )
   }
 
-  async synchronizeUserInstallationRights(githubInstallations, userId) {
-    const installations = (await Promise.all(
-      githubInstallations.map(async githubInstallation => {
-        return Installation.query()
-          .where({ githubId: githubInstallation.id })
-          .first()
-      }),
-    )).filter(Boolean)
+  async synchronizeUserInstallations() {
+    const options = this.octokit.apps.listInstallationsForAuthenticatedUser
+      .endpoint.DEFAULTS
+    const githubInstallations = await this.octokit.paginate(options)
 
+    return Promise.all(
+      githubInstallations.map(async githubInstallation => {
+        return getOrCreateInstallation({
+          githubId: githubInstallation.id,
+          deleted: false,
+        })
+      }),
+    )
+  }
+
+  async synchronizeUserInstallationRights(installations, userId) {
     const userInstallationRights = await UserInstallationRight.query().where({
       userId,
     })
@@ -425,14 +441,9 @@ export class GitHubSynchronizer {
 
     this.octokit = getUserOctokit(user)
 
-    const options = this.octokit.apps.listInstallationsForAuthenticatedUser
-      .endpoint.DEFAULTS
-    const githubInstallations = await this.octokit.paginate(options)
+    const installations = await this.synchronizeUserInstallations(userId)
 
-    const installations = await this.synchronizeUserInstallationRights(
-      githubInstallations,
-      userId,
-    )
+    await this.synchronizeUserInstallationRights(installations, userId)
 
     const results = await Promise.all(
       installations.map(installation =>

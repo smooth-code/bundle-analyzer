@@ -116,7 +116,7 @@ const config = convict({
       doc: 'Sentry environment',
       format: String,
       default: 'development',
-      env: 'NODE_ENV',
+      env: 'SENTRY_ENVIRONMENT',
     },
     dsn: {
       doc: 'Sentry DSN',

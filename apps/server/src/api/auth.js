@@ -2,9 +2,8 @@ import { Router } from 'express'
 import axios from 'axios'
 import asyncHandler from 'express-async-handler'
 import bodyParser from 'body-parser'
-import Octokit from '@octokit/rest'
+import { getUserOctokit } from '../modules/github'
 import { User } from '../models'
-import config from '../config'
 import { synchronizeFromUserId } from '../jobs/synchronize'
 
 const router = new Router()
@@ -19,10 +18,7 @@ function getDataFromProfile(profile) {
 }
 
 async function registerUserFromGitHub(accessToken) {
-  const octokit = new Octokit({
-    debug: config.get('env') === 'development',
-    auth: accessToken,
-  })
+  const octokit = getUserOctokit({ accessToken })
 
   const profile = await octokit.users.getAuthenticated()
   const userData = { ...getDataFromProfile(profile.data), accessToken }

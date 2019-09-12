@@ -19,9 +19,10 @@
     "db:truncate": "yarn knex-scripts truncate",
     "db:migrate": "yarn knex migrate:latest",
     "db:rollback": "yarn knex migrate:rollback",
-    "db:reset": "yarn db:drop && yarn db:create && yarn db:load && yarn db:seed",
+    "db:reset": "yarn db:drop && yarn db:create && yarn db:migrate",
     "knex": "babel-node ./node_modules/.bin/knex",
-    "knex-scripts": "babel-node ./node_modules/.bin/knex-scripts"
+    "knex-scripts": "babel-node ./node_modules/.bin/knex-scripts",
+    "smee": "smee --url https://smee.io/8hyGlwoDt5131zV --path /event-handler --port 3000"
   },
   "dependencies": {
     "@octokit/app": "^4.1.0",

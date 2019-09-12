@@ -2,5 +2,8 @@
   "appBaseUrl": "https://app.bundle-analyzer.com",
   "s3": {
     "bucket": "bundle-analyzer-production"
+  },
+  "sentry": {
+    "environment": "production"
   }
 }

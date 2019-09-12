@@ -1,20 +1,6 @@
 /* eslint-disable default-case */
-import { Installation } from '../../models'
 import { synchronizeFromInstallationId } from '../../jobs/synchronize'
-
-async function createOrUpdateInstallation(payload) {
-  let installation = await Installation.query()
-    .where({ githubId: payload.githubId })
-    .first()
-
-  if (installation) {
-    await installation.$query().patch(payload)
-  } else {
-    installation = Installation.query().insertAndFetch(payload)
-  }
-
-  return installation
-}
+import { getOrCreateInstallation } from '../synchronizer/github'
 
 export async function handleGitHubEvents({ name, payload }) {
   try {
@@ -23,7 +9,7 @@ export async function handleGitHubEvents({ name, payload }) {
         switch (payload.action) {
           case 'removed':
           case 'added': {
-            const installation = await createOrUpdateInstallation({
+            const installation = await getOrCreateInstallation({
               githubId: payload.installation.id,
               deleted: false,
             })
@@ -36,7 +22,7 @@ export async function handleGitHubEvents({ name, payload }) {
       case 'installation': {
         switch (payload.action) {
           case 'created': {
-            const installation = await createOrUpdateInstallation({
+            const installation = await getOrCreateInstallation({
               githubId: payload.installation.id,
               deleted: false,
             })
@@ -44,7 +30,7 @@ export async function handleGitHubEvents({ name, payload }) {
             return
           }
           case 'deleted': {
-            const installation = await createOrUpdateInstallation({
+            const installation = await getOrCreateInstallation({
               githubId: payload.installation.id,
               deleted: true,
             })
