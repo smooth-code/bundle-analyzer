@@ -1,0 +1,65 @@
+---
+name: Quick Start
+route: /
+---
+
+# Quick Start
+
+We've made getting started with Bundle Analyzer as easy as possible. The rest of this page will outline important first steps to getting your first repository up and running on Bundle Analyzer.
+
+## Ingredients List
+
+Here are the things you'll need or want to have in place before using Bundle Analyzer:
+
+1. An account on GitHub, as of today we only supports GitHub.
+
+2. A bundle generated with webpack, as of today we only supports webpack bundles.
+
+3. A continuous integration provider that automatically build things in each of your PR.
+
+## Getting Started
+
+## Basic usage
+
+1. Install the [Bundle Analyzer GitHub App](https://github.com/apps/bundle-analyzer) and choose the repositories you want to give access to.
+
+2. Once installed, you will be logged in and all your repositories will be automatically synced.
+
+3. You can click on an organization from your dashboard to access its repositories, or navigate directly to a specific repository usiing: `https://app.bundle-analyzer.com/gh/<account-name>/<repo-name>`. Example: `https://app.bundle-analyzer.com/gh/smooth-code/bundle-analyzer`
+
+<img src={require('./quick-start-token.jpg')} width="100%" />
+
+4. Install `@bundle-analyzer/webpack-plugin` in your project:
+
+```bash
+npm install @bundle-analyzer/webpack-plugin
+```
+
+5. Add `@bundle-analyzer/webpack-plugin` in your webpack config and specify your repository token:
+
+```js
+const BundleAnalyzerPlugin = require('@bundle-analyzer/webpack-plugin')
+
+module.exports = {
+  entry: 'index.js',
+  output: {
+    path: __dirname + '/dist',
+    filename: 'index_bundle.js',
+  },
+  plugins: [new BundleAnalyzerPlugin({ token: '<repository-token>' })],
+}
+```
+
+> Be careful of keeping this token secret, if your project is open source consider using environment variable.
+
+At your next build, you will have access to all stats.
+
+## Common questions
+
+### Will Bundle Analyzer work with my CI provider?
+
+See [the list of CI Providers](/supported-ci-providers) that work with Bundle Analyzer out of the box, but all CI providers are able to be detected.
+
+### Will Bundle Analyzer work with my repository provider?
+
+For now, only GitHub is supported as repository provider.
