@@ -35,5 +35,8 @@
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"
+  },
+  "dependencies": {
+    "@sentry/cli": "^1.47.1"
   }
 }

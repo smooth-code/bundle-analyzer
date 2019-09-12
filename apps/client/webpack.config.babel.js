@@ -48,7 +48,7 @@ export default {
     new webpack.EnvironmentPlugin({
       SENTRY_RELEASE: process.env.COMMIT_REF || '',
     }),
-    ...(prod
+    ...(prod && process.env.NETLIFY
       ? [
           new BundleAnalyzerWebpackPlugin({
             token: '351c377ddf773448ff344618ac0313071242982f',
