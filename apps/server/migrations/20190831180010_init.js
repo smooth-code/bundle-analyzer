@@ -127,6 +127,17 @@ exports.up = async knex => {
         .notNullable()
         .index()
     })
+    .createTable('bundles', table => {
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+      table.uuid('repository_id').index()
+      table.foreign('repository_id').references('repositories.id')
+      table.timestamps(false, true)
+      table.string('bundler').notNullable()
+      table.json('stats').notNullable()
+    })
     .createTable('builds', table => {
       table
         .uuid('id')
@@ -138,6 +149,11 @@ exports.up = async knex => {
         .notNullable()
         .index()
       table.foreign('repository_id').references('repositories.id')
+      table
+        .uuid('bundle_id')
+        .notNullable()
+        .index()
+      table.foreign('bundle_id').references('bundles.id')
       table
         .string('name')
         .notNullable()
@@ -162,7 +178,6 @@ exports.up = async knex => {
       table.integer('github_check_run_id')
       table.string('conclusion').index()
       table.json('provider_metadata')
-      table.json('stats').notNullable()
       table.json('commit_info').notNullable()
       table.json('size_check_config').notNullable()
     })
@@ -208,6 +223,7 @@ exports.down = knex =>
     .dropTableIfExists('user_repository_rights')
     .dropTableIfExists('user_installation_rights')
     .dropTableIfExists('installation_repository_rights')
+    .dropTableIfExists('bundles')
     .dropTableIfExists('builds')
     .dropTableIfExists('repositories')
     .dropTableIfExists('organizations')

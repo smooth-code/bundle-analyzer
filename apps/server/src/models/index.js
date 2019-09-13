@@ -1,4 +1,5 @@
 export * from './Build'
+export * from './Bundle'
 export * from './Installation'
 export * from './InstallationRepositoryRight'
 export * from './Synchronization'

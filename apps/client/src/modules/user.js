@@ -1,7 +1,7 @@
 function hasSyncStatus(synchronization) {
   return Boolean(
     synchronization &&
-      (synchronization.jobStatus === 'pending' ||
+      (synchronization.jobStatus === 'queued' ||
         synchronization.jobStatus === 'progress'),
   )
 }

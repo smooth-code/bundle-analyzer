@@ -9,7 +9,7 @@ export async function synchronizeFromInstallationId(installationId) {
   const synchronization = await Synchronization.query().insert({
     type: 'installation',
     installationId,
-    jobStatus: 'pending',
+    jobStatus: 'queued',
   })
 
   job.push(synchronization.id)
@@ -19,7 +19,7 @@ export async function synchronizeFromUserId(userId) {
   const synchronization = await Synchronization.query().insert({
     type: 'user',
     userId,
-    jobStatus: 'pending',
+    jobStatus: 'queued',
   })
 
   job.push(synchronization.id)

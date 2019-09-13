@@ -30,7 +30,7 @@ export const modelSchema = {
   properties: {
     jobStatus: {
       type: 'string',
-      enum: ['pending', 'progress', 'complete', 'error'],
+      enum: ['queued', 'progress', 'complete', 'error'],
     },
   },
 }

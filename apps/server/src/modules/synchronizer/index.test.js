@@ -18,7 +18,7 @@ xdescribe('synchronizer', () => {
       synchronization = await Synchronization.query().insertAndFetch({
         type: 'installation',
         installationId: installation.id,
-        jobStatus: 'pending',
+        jobStatus: 'queued',
       })
     })
 

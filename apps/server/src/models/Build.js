@@ -1,6 +1,4 @@
 import { BaseModel, mergeSchemas } from './util'
-import s3 from '../services/s3'
-import config from '../config'
 
 const NEXT_NUMBER = Symbol('nextNumber')
 
@@ -8,7 +6,7 @@ export class Build extends BaseModel {
   static tableName = 'builds'
 
   static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
-    required: ['repositoryId', 'branch', 'commit', 'jobStatus', 'stats'],
+    required: ['repositoryId', 'bundleId', 'branch', 'commit', 'jobStatus'],
     properties: {
       repositoryId: { type: 'string' },
       branch: { type: 'string' },
@@ -17,10 +15,10 @@ export class Build extends BaseModel {
       jobStatus: { type: 'string' },
       number: { type: 'integer' },
       githubCheckRunId: { type: 'integer' },
-      stats: { type: 'object' },
       commitInfo: { type: 'object' },
       sizeCheckConfig: { type: 'object' },
       providerMetadata: { type: 'object' },
+      bundleId: { type: 'string' },
     },
   })
 
@@ -33,24 +31,14 @@ export class Build extends BaseModel {
         to: 'repositories.id',
       },
     },
-  }
-
-  static getWebpackStatsPath(buildId) {
-    return `builds/${buildId}/webpack-stats.json`
-  }
-
-  static getWebpackStatsPutUrl(buildId) {
-    return s3.getSignedUrl('putObject', {
-      Bucket: config.get('s3.bucket'),
-      Key: Build.getWebpackStatsPath(buildId),
-    })
-  }
-
-  static getWebpackStatsGetUrl(buildId) {
-    return s3.getSignedUrl('getObject', {
-      Bucket: config.get('s3.bucket'),
-      Key: Build.getWebpackStatsPath(buildId),
-    })
+    bundle: {
+      relation: BaseModel.BelongsToOneRelation,
+      modelClass: 'Bundle',
+      join: {
+        from: 'builds.bundleId',
+        to: 'bundles.id',
+      },
+    },
   }
 
   $beforeInsert(queryContext) {
@@ -69,5 +57,13 @@ export class Build extends BaseModel {
       )
     }
     return json
+  }
+
+  async $checkWritePermission(user) {
+    return this.$relatedQuery('repository').checkWritePermission(this, user)
+  }
+
+  async $checkReadPermission(user) {
+    return this.$relatedQuery('repository').checkReadPermission(this, user)
   }
 }

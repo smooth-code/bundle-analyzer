@@ -4,6 +4,7 @@ import { getInstallationOctokit } from '../modules/github/client'
 import { getSizeReport, getGithubCheckInfo } from '../modules/size-check'
 
 export async function runBuild(build) {
+  build.bundle = await build.$relatedQuery('bundle')
   const repository = await build.$relatedQuery('repository')
   if (!repository) {
     throw new Error(`Repository not found`)

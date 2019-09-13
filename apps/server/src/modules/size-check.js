@@ -30,7 +30,7 @@ function getCompressionLabel(compression) {
 export function getSizeReport(build) {
   const checks = []
   build.sizeCheckConfig.files.forEach(fileRule => {
-    const ruleAssets = build.stats.assets.filter(asset =>
+    const ruleAssets = build.bundle.stats.assets.filter(asset =>
       minimatch(asset.name, fileRule.test),
     )
     if (!ruleAssets.length) return
