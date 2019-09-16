@@ -49,13 +49,13 @@ export default {
     new webpack.EnvironmentPlugin({
       SENTRY_RELEASE: process.env.COMMIT_REF || '',
     }),
-    // ...(prod && process.env.NETLIFY
-    //   ? [
-    //       new BundleAnalyzerWebpackPlugin({
-    //         token: '351c377ddf773448ff344618ac0313071242982f',
-    //       }),
-    //     ]
-    //   : []),
+    ...(prod && process.env.NETLIFY
+      ? [
+          new BundleAnalyzerWebpackPlugin({
+            token: '1d75a4ed7f94f061283dfd0734c1ef3ce1a9f82a',
+          }),
+        ]
+      : []),
   ],
   devServer: {
     hot: true,

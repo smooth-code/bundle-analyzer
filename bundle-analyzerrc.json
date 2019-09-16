@@ -1,0 +1,9 @@
+{
+  "files": [
+    {
+      "test": "*.js",
+      "maxSize": "320 kb",
+      "compression": "gzip"
+    }
+  ]
+}
