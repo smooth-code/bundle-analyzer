@@ -7,7 +7,6 @@ import {
   NavbarBrandLink,
   Navbar,
   NavbarBrand,
-  NavbarBrandLogo,
   BrandLogo,
   Menu,
   MenuItem,
