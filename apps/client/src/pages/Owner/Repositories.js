@@ -132,6 +132,7 @@ export function OwnerRepositories() {
                 overviewBuild {
                   id
                   bundle {
+                    id
                     stats {
                       assets {
                         name
