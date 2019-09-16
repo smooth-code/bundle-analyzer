@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 /** @jsx jsx */
 import { jsx, Box, Flex, useColorMode } from 'theme-ui'
-import { Link, useConfig } from 'docz'
+import { Link } from 'docz'
 
 function Brand(props) {
   const [colorMode] = useColorMode()
