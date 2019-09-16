@@ -13,7 +13,7 @@ export const RepositoryContextFragment = gql`
     baselineBranch
     archived
     active
-    sizeCheckConfig
+    config
     owner {
       id
       name

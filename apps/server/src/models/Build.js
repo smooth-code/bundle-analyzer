@@ -16,7 +16,7 @@ export class Build extends BaseModel {
       number: { type: 'integer' },
       githubCheckRunId: { type: 'integer' },
       commitInfo: { type: 'object' },
-      sizeCheckConfig: { type: 'object' },
+      config: { type: 'object' },
       providerMetadata: { type: 'object' },
       bundleId: { type: 'string' },
     },

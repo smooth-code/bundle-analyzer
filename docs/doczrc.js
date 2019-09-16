@@ -1,4 +1,9 @@
 module.exports = {
   src: './src',
-  menu: ['Quick Start', 'Frequently Asked Questions', 'Supported CI Providers'],
+  menu: [
+    'Quick Start',
+    'Project Configuration',
+    'Frequently Asked Questions',
+    'Supported CI Providers',
+  ],
 }

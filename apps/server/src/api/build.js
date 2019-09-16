@@ -7,6 +7,7 @@ import { Build, Bundle, Repository } from '../models'
 import buildJob from '../jobs/build'
 import { getInstallationOctokit } from '../modules/github/client'
 import config from '../config'
+import { validateConfig } from '../modules/config'
 
 const router = new Router()
 
@@ -66,9 +67,21 @@ router.post(
   getTokenRepository,
   assertBodyValue('commit', 'branch', 'providerMetadata', 'bundleId'),
   asyncHandler(async (req, res) => {
+    const buildConfig = req.body.config || req.repository.config
+
+    const configValidation = validateConfig(buildConfig)
+
+    if (!configValidation.valid) {
+      res.status(400)
+      res.send({
+        error: { message: 'Invalid config', errors: configValidation.errors },
+      })
+      return
+    }
+
     const bundle = await Bundle.query().findById(req.body.bundleId)
     if (!bundle) {
-      throw new HttpError(400, 'bundle not found')
+      throw new HttpError(400, 'Bundle not found')
     }
 
     const [installation] = await req.repository.$relatedQuery('installations')
@@ -104,7 +117,7 @@ router.post(
       branch: req.body.branch,
       commit: req.body.commit,
       stats: req.body.stats,
-      sizeCheckConfig: req.repository.sizeCheckConfig,
+      config: buildConfig,
       providerMetadata: req.body.providerMetadata,
       commitInfo: {
         sha: commitInfo.sha,

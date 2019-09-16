@@ -120,12 +120,12 @@ export class GitHubSynchronizer {
           repository = await Repository.query().insert({
             ...data,
             baselineBranch: githubRepository.default_branch,
-            sizeCheckConfig: {
+            config: {
               files: [
                 {
-                  test: '*',
-                  maxSize: '250 kB',
-                  compression: 'none',
+                  test: '*.js',
+                  maxSize: '20 kB',
+                  compression: 'gzip',
                 },
               ],
             },

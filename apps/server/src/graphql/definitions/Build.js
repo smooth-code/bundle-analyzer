@@ -1,7 +1,5 @@
 import gql from 'graphql-tag'
-import { Build } from '../../models'
 import { getSizeReport } from '../../modules/size-check'
-import buildJob from '../../jobs/build'
 import { getRepository } from './Repository'
 
 export const typeDefs = gql`
@@ -84,10 +82,6 @@ export const typeDefs = gql`
   extend type Query {
     build(ownerLogin: String!, repositoryName: String!, number: Int!): Build
   }
-
-  extend type Mutation {
-    restartBuild(id: ID!): Build!
-  }
 `
 
 export const resolvers = {
@@ -98,6 +92,7 @@ export const resolvers = {
   },
   Build: {
     async sizeReport(build) {
+      build.bundle = await build.$relatedQuery('bundle')
       return getSizeReport(build)
     },
     async repository(build) {
@@ -119,30 +114,6 @@ export const resolvers = {
         .$relatedQuery('builds')
         .where({ number })
         .first()
-    },
-  },
-  Mutation: {
-    async restartBuild(rootObj, { buildId }, { user }) {
-      const build = await Build.query()
-        .findById(buildId)
-        .eager('repository')
-      const hasWritePermission = await build.$checkReadPermission(user)
-      if (!hasWritePermission) return null
-      const newBuild = await Build.query().insertAndFetch({
-        jobStatus: 'queued',
-        repositoryId: build.repositoryId,
-        bundleId: build.bundleId,
-        branch: build.branch,
-        commit: build.commit,
-        sizeCheckConfig: build.repository.sizeCheckConfig,
-        providerMetadata: {
-          service: 'bundle-analyzer/restart-build',
-          build: build.id,
-        },
-        commitInfo: build.commitInfo,
-      })
-      await buildJob.push(newBuild.id)
-      return newBuild
     },
   },
 }

@@ -10,7 +10,7 @@ export class Repository extends BaseModel {
   static tableName = 'repositories'
 
   static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
-    required: ['githubId', 'name', 'private', 'sizeCheckConfig'],
+    required: ['githubId', 'name', 'private', 'config'],
     properties: {
       githubId: { type: 'number' },
       name: { type: 'string' },
@@ -21,7 +21,7 @@ export class Repository extends BaseModel {
       userId: { type: ['string', null] },
       private: { type: 'boolean' },
       baselineBranch: { type: 'string' },
-      sizeCheckConfig: { type: 'object' },
+      config: { type: 'object' },
     },
   })
 

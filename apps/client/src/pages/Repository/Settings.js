@@ -10,6 +10,7 @@ import {
   CardTitle,
   CardText,
   Code,
+  FadeLink,
 } from '../../components'
 import { useRepository, useUpdateRepository } from './RepositoryContext'
 
@@ -125,35 +126,43 @@ function Archive() {
 function SizeCheck() {
   const repository = useRepository()
   const updateRepository = useUpdateRepository()
-  const [sizeCheckConfig, setSizeCheckConfig] = React.useState(
-    repository.sizeCheckConfig,
-  )
+  const [config, setConfig] = React.useState(repository.config)
   const [updated, setUpdated] = React.useState(false)
   const [error, setError] = React.useState(false)
 
   return (
     <Card>
       <CardBody>
-        <CardTitle>Size check</CardTitle>
-        <CardText>Configuration of size checks.</CardText>
+        <CardTitle>Configuration</CardTitle>
+        <CardText>
+          Default project configuration.
+          <FadeLink
+            href="https://docs.bundle-analyzer.com/project-configuration"
+            rel="noopener noreferrer"
+            color="white"
+          >
+            Read documentation to know more about project config
+          </FadeLink>
+          .
+        </CardText>
         <Textarea
-          value={sizeCheckConfig}
+          value={config}
           onChange={event => {
             const { value } = event.target
-            setSizeCheckConfig(value)
+            setConfig(value)
             setError(false)
             updateRepository({
               variables: {
                 repository: {
                   id: repository.id,
-                  sizeCheckConfig: value,
+                  config: value,
                 },
               },
             })
               .then(() => setUpdated(true))
               .catch(error => {
                 setError(true)
-                if (!error.message.match(/Invalid size check config/)) {
+                if (!error.message.match(/Invalid config/)) {
                   Sentry.captureException(error)
                 }
               })

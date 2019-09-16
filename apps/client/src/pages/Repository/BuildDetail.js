@@ -100,17 +100,11 @@ export const BuildDetailFragment = gql`
 `
 
 export function Build({ build }) {
-  const { stats } = build
+  const {
+    bundle: { stats },
+  } = build
   const buildStatus = getBuildStatus(build)
   const buildColor = getStatusColor(buildStatus)
-  // const [restartBuild, { data: updateData }] = useMutation(gql`
-  //   mutation RestartBuild($buildId: ID!) {
-  //     restartBuild(id: $buildId) {
-  //       id
-  //       number
-  //     }
-  //   }
-  // `)
 
   return (
     <Container my={4} position="relative">

@@ -80,7 +80,7 @@ exports.up = async knex => {
         .string('baseline_branch')
         .notNullable()
         .defaultTo('master')
-      table.json('size_check_config').notNullable()
+      table.json('config').notNullable()
     })
     .createTable('user_repository_rights', table => {
       table
@@ -179,7 +179,7 @@ exports.up = async knex => {
       table.string('conclusion').index()
       table.json('provider_metadata')
       table.json('commit_info').notNullable()
-      table.json('size_check_config').notNullable()
+      table.json('config').notNullable()
     })
     .createTable('user_installation_rights', table => {
       table

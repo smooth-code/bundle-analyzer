@@ -7,11 +7,13 @@ import { connect as connectDatabase } from './services/pg'
 import { handleKillSignals } from './modules/teardown'
 
 // Initialize sentry
-Sentry.init({
-  dsn: config.get('sentry.dsn'),
-  environment: config.get('sentry.environment'),
-  release: config.get('sentry.release'),
-})
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: config.get('sentry.dsn'),
+    environment: config.get('sentry.environment'),
+    release: config.get('sentry.release'),
+  })
+}
 
 connectDatabase()
 handleKillSignals()
