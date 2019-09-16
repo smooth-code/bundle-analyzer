@@ -52,6 +52,7 @@ export default {
     ...(prod && process.env.NETLIFY
       ? [
           new BundleAnalyzerWebpackPlugin({
+            configFile: path.join(__dirname, 'bundle-analyzerrc.json'),
             token: '1d75a4ed7f94f061283dfd0734c1ef3ce1a9f82a',
           }),
         ]
