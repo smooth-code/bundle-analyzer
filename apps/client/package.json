@@ -32,7 +32,7 @@
   },
   "scripts": {
     "dev": "webpack-dev-server",
-    "build": "NODE_ENV=production webpack && cp _redirects dist/"
+    "build": "NODE_ENV=production webpack && cp _redirects dist/ && cp -r static/* dist/"
   },
   "browserslist": {
     "production": [
