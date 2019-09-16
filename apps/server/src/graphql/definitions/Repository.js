@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { Repository } from '../../models'
 import { getOwner } from './Owner'
-import { validateSizeCheckConfig } from '../../modules/size-check'
+import { validateConfig } from '../../modules/config'
 
 export const typeDefs = gql`
   type Repository {
@@ -14,7 +14,7 @@ export const typeDefs = gql`
     active: Boolean!
     archived: Boolean!
     overviewBuild: Build
-    sizeCheckConfig: String!
+    config: String!
     permissions: [Permission]!
     "Builds associated to the repository"
     builds(first: Int!, after: Int!): BuildResult!
@@ -29,7 +29,7 @@ export const typeDefs = gql`
     id: ID!
     baselineBranch: String
     archived: Boolean
-    sizeCheckConfig: String
+    config: String
   }
 
   extend type Mutation {
@@ -107,8 +107,8 @@ export const resolvers = {
         edges: result.results,
       }
     },
-    sizeCheckConfig(repository) {
-      return JSON.stringify(repository.sizeCheckConfig, null, 2)
+    config(repository) {
+      return JSON.stringify(repository.config, null, 2)
     },
   },
   Query: {
@@ -146,14 +146,14 @@ export const resolvers = {
         throw new Error('Only active repositories can be archived')
       }
 
-      if (data.sizeCheckConfig) {
+      if (data.config) {
         try {
-          data.sizeCheckConfig = JSON.parse(data.sizeCheckConfig)
+          data.config = JSON.parse(data.config)
         } catch (error) {
-          throw new Error('Invalid size check config')
+          throw new Error('Invalid config')
         }
-        if (!validateSizeCheckConfig(data.sizeCheckConfig)) {
-          throw new Error('Invalid size check config')
+        if (!validateConfig(data.config).valid) {
+          throw new Error('Invalid config')
         }
       }
 

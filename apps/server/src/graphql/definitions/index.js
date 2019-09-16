@@ -2,6 +2,7 @@ import * as schema from './schema'
 import * as Build from './Build'
 import * as Date from './Date'
 import * as Installation from './Installation'
+import * as JobStatus from './JobStatus'
 import * as Organization from './Organization'
 import * as Owner from './Owner'
 import * as PageInfo from './PageInfo'
@@ -15,6 +16,7 @@ export const definitions = [
   Build,
   Date,
   Installation,
+  JobStatus,
   Organization,
   Owner,
   PageInfo,

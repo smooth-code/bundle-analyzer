@@ -1,5 +1,4 @@
 import gql from 'graphql-tag'
-import { Build } from '../../models'
 import { getSizeReport } from '../../modules/size-check'
 import { getRepository } from './Repository'
 
@@ -7,20 +6,6 @@ export const typeDefs = gql`
   enum BuildConclusion {
     success
     failure
-  }
-
-  type BuildStatAsset {
-    name: String!
-    size: Int!
-    gzipSize: Int!
-    brotliSize: Int!
-    chunkNames: [String!]!
-  }
-
-  type BuildStat {
-    assets: [BuildStatAsset!]!
-    chunksNumber: Int!
-    modulesNumber: Int!
   }
 
   type CommitAuthor {
@@ -55,19 +40,38 @@ export const typeDefs = gql`
     compareCompression: Compression!
   }
 
+  type BundleStatsAsset {
+    name: String!
+    size: Int!
+    gzipSize: Int!
+    brotliSize: Int!
+    chunkNames: [String!]!
+  }
+
+  type BundleStats {
+    assets: [BundleStatsAsset!]!
+    chunksNumber: Int!
+    modulesNumber: Int!
+  }
+
+  type Bundle {
+    id: ID!
+    webpackStatsUrl: String!
+    stats: BundleStats!
+  }
+
   type Build {
     id: ID!
     createdAt: DateTime!
     branch: String!
     commit: String!
     number: Int!
-    webpackStatsUrl: String!
-    stats: BuildStat!
     jobStatus: JobStatus!
     conclusion: BuildConclusion
     commitInfo: Commit!
     sizeReport: SizeReport
     repository: Repository!
+    bundle: Bundle!
   }
 
   type BuildResult {
@@ -81,15 +85,21 @@ export const typeDefs = gql`
 `
 
 export const resolvers = {
-  Build: {
-    async webpackStatsUrl(build) {
-      return Build.getWebpackStatsGetUrl(build.id)
+  Bundle: {
+    async webpackStatsUrl(bundle) {
+      return bundle.getWebpackStatsGetUrl()
     },
+  },
+  Build: {
     async sizeReport(build) {
+      build.bundle = await build.$relatedQuery('bundle')
       return getSizeReport(build)
     },
     async repository(build) {
       return build.$relatedQuery('repository')
+    },
+    async bundle(build) {
+      return build.$relatedQuery('bundle')
     },
   },
   Query: {

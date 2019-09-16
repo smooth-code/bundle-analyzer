@@ -32,7 +32,9 @@ export function RepositorySummary({ repository }) {
   if (!repository.overviewBuild) {
     return <div>No info to display</div>
   }
-  const { stats } = repository.overviewBuild
+  const {
+    bundle: { stats },
+  } = repository.overviewBuild
   return (
     <Box>
       <Box row mx={-4}>
@@ -129,16 +131,18 @@ export function OwnerRepositories() {
                 archived
                 overviewBuild {
                   id
-                  stats {
-                    assets {
-                      name
-                      size
-                      gzipSize
-                      brotliSize
-                      chunkNames
+                  bundle {
+                    stats {
+                      assets {
+                        name
+                        size
+                        gzipSize
+                        brotliSize
+                        chunkNames
+                      }
+                      chunksNumber
+                      modulesNumber
                     }
-                    chunksNumber
-                    modulesNumber
                   }
                 }
               }

@@ -3,6 +3,7 @@ import React from 'react'
 import gql from 'graphql-tag'
 import styled, { Box } from '@xstyled/styled-components'
 import { Helmet } from 'react-helmet'
+// import { useMutation } from '@apollo/react-hooks'
 import {
   Container,
   Card,
@@ -72,16 +73,19 @@ export const BuildDetailFragment = gql`
         login
       }
     }
-    stats {
-      assets {
-        name
-        size
-        gzipSize
-        brotliSize
-        chunkNames
+    bundle {
+      id
+      stats {
+        assets {
+          name
+          size
+          gzipSize
+          brotliSize
+          chunkNames
+        }
+        chunksNumber
+        modulesNumber
       }
-      chunksNumber
-      modulesNumber
     }
     sizeReport {
       checks {
@@ -96,9 +100,12 @@ export const BuildDetailFragment = gql`
 `
 
 export function Build({ build }) {
-  const { stats } = build
+  const {
+    bundle: { stats },
+  } = build
   const buildStatus = getBuildStatus(build)
   const buildColor = getStatusColor(buildStatus)
+
   return (
     <Container my={4} position="relative">
       <Box row m={-2}>

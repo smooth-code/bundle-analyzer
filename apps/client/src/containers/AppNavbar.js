@@ -57,10 +57,7 @@ export function AppNavbar() {
     <Navbar>
       <NavbarBrandLink as={Link} to="/">
         <NavbarBrand>
-          <NavbarBrandLogo>
-            <BrandLogo />
-          </NavbarBrandLogo>
-          Bundle Analyzer
+          <BrandLogo width={200} />
         </NavbarBrand>
       </NavbarBrandLink>
       <NavbarSecondary>

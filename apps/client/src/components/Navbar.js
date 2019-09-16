@@ -22,10 +22,6 @@ export const NavbarBrand = styled.h1`
   text-decoration: none;
 `
 
-export const NavbarBrandLogo = styled.div`
-  margin-right: 2;
-`
-
 export const NavbarSecondary = styled.div`
   flex-shrink: 0;
 `
