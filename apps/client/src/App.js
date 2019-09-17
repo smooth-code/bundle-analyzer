@@ -2,6 +2,7 @@ import React from 'react'
 import { Helmet } from 'react-helmet'
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 import { Normalize } from '@smooth-ui/core-sc'
+import { ScrollToTop, GoogleAnalytics } from 'containers/Router'
 import {
   GlobalStyle,
   Layout,
@@ -33,6 +34,8 @@ export function App() {
         <Normalize />
         <GlobalStyle />
         <BrowserRouter>
+          <ScrollToTop />
+          <GoogleAnalytics />
           <AuthInitializer>
             <ApolloInitializer>
               <UserInitializer>

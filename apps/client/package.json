@@ -15,6 +15,7 @@
     "filesize": "^4.2.0",
     "graphql": "^14.5.6",
     "graphql-tag": "^2.10.1",
+    "history": "^4.10.1",
     "moment": "^2.24.0",
     "polished": "^3.4.1",
     "prop-types": "^15.7.2",
