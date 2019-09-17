@@ -32,3 +32,10 @@ export function GoogleAnalytics({ children }) {
   }, [href, pathname])
   return children || null
 }
+
+export function AbsoluteRedirect({ to }) {
+  React.useLayoutEffect(() => {
+    window.location = to
+  }, [to])
+  return null
+}

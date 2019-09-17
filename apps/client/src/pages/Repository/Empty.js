@@ -8,6 +8,7 @@ import {
   CardBody,
   CardTitle,
   CardText,
+  FadeLink,
 } from 'components'
 import { hasWritePermission } from 'modules/permissions'
 import { useRepository } from './RepositoryContext'
@@ -27,7 +28,18 @@ export function RepositoryEmpty() {
       <Card>
         <CardBody>
           <CardTitle>Setup Bundle Analyzer on this project</CardTitle>
-          <CardText>TODO: document how to setup the project.</CardText>
+          <CardText>
+            See{' '}
+            <FadeLink
+              color="white"
+              href="https://docs.bundle-analyzer.com"
+              target="_blanl"
+              rel="noopener noreferrer"
+            >
+              Quick Start Guide
+            </FadeLink>{' '}
+            to learn how to setup the project.
+          </CardText>
           <Box overflow="auto">
             <Code>BUNDLE_ANALYZER_TOKEN={repository.token}</Code>
           </Box>

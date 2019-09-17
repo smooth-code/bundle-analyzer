@@ -7,6 +7,7 @@ import styled, { Box } from '@xstyled/styled-components'
 import { Query } from 'containers/Apollo'
 import { GoRepo } from 'react-icons/go'
 import { useUser } from 'containers/User'
+import { AbsoluteRedirect } from 'containers/Router'
 import { OwnerAvatar } from 'containers/OwnerAvatar'
 import { isUserSyncing } from 'modules/user'
 import {
@@ -33,11 +34,9 @@ const RepositoryItem = styled.li`
 export function Home() {
   const user = useUser()
   if (!user)
-    return (
-      <Container textAlign="center" my={4}>
-        TODO: redirect the user to www
-      </Container>
-    )
+    return process.env.NODE_ENV === 'production' ? (
+      <AbsoluteRedirect to="https://www.bundle-analyzer.com" />
+    ) : null
   if (!user.installations.length && !isUserSyncing(user)) {
     return (
       <Container textAlign="center" my={4}>
