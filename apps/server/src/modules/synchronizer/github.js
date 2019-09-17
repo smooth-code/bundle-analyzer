@@ -121,13 +121,7 @@ export class GitHubSynchronizer {
             ...data,
             baselineBranch: githubRepository.default_branch,
             config: {
-              files: [
-                {
-                  test: '*.js',
-                  maxSize: '20 kB',
-                  compression: 'gzip',
-                },
-              ],
+              files: [],
             },
           })
         }
