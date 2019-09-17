@@ -4,6 +4,6 @@ export const GlobalStyle = createGlobalStyle`
   html, body {
     background-color: gray900;
     color: gray600;
-    line-height: 1.5;
+    line-height: 1.4;
   }
 `

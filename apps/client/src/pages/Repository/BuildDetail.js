@@ -117,59 +117,75 @@ export function Build({ build }) {
                   <StatusIcon status={buildStatus} mt={1} />
                 </Box>
                 <Box col px={2}>
-                  <Box color={buildColor} display="flex" alignItems="center">
-                    <Box forwardedAs="strong" mr={2}>
-                      {build.branch}
+                  <Box row>
+                    <Box col px={2}>
+                      <Box
+                        color={buildColor}
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <Box forwardedAs="strong" mr={2}>
+                          {build.branch}
+                        </Box>
+                        <Box>{build.commitInfo.message}</Box>
+                      </Box>
+                      <Box mt={3}>
+                        <FadeLink
+                          target="_blank"
+                          rel="noopener noreferer"
+                          href={`https://github.com/${build.repository.owner.login}/${build.repository.name}/commit/${build.commit}`}
+                          color="white"
+                          display="flex"
+                          alignItems="center"
+                        >
+                          <Box forwardedAs={GoGitCommit} mr={2} />
+                          Commit {build.commit.slice(0, 7)}
+                        </FadeLink>
+                        <FadeLink
+                          target="_blank"
+                          rel="noopener noreferer"
+                          href={`https://github.com/${build.repository.owner.login}/${build.repository.name}/tree/${build.branch}`}
+                          color="white"
+                          display="flex"
+                          alignItems="center"
+                        >
+                          <Box forwardedAs={GoGitBranch} mr={2} />
+                          Branch {build.branch}
+                        </FadeLink>
+                      </Box>
+                      <Box mt={3} display="flex" alignItems="center">
+                        <Box
+                          forwardedAs="img"
+                          borderRadius="base"
+                          alt={build.commitInfo.author.name}
+                          src={build.commitInfo.author.avatarUrl}
+                          width={18}
+                          height={18}
+                          mr={2}
+                        />
+                        {build.commitInfo.author.name}
+                      </Box>
                     </Box>
-                    <Box>{build.commitInfo.message}</Box>
-                  </Box>
-                  <Box mt={3}>
-                    <FadeLink
-                      target="_blank"
-                      rel="noopener noreferer"
-                      href={`https://github.com/${build.repository.owner.login}/${build.repository.name}/commit/${build.commit}`}
-                      color="white"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      <Box forwardedAs={GoGitCommit} mr={2} />
-                      Commit {build.commit.slice(0, 7)}
-                    </FadeLink>
-                    <FadeLink
-                      target="_blank"
-                      rel="noopener noreferer"
-                      href={`https://github.com/${build.repository.owner.login}/${build.repository.name}/tree/${build.branch}`}
-                      color="white"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      <Box forwardedAs={GoGitBranch} mr={2} />
-                      Branch {build.branch}
-                    </FadeLink>
-                  </Box>
-                  <Box mt={3} display="flex" alignItems="center">
                     <Box
-                      forwardedAs="img"
-                      borderRadius="base"
-                      alt={build.commitInfo.author.name}
-                      src={build.commitInfo.author.avatarUrl}
-                      width={18}
-                      height={18}
-                      mr={2}
-                    />
-                    {build.commitInfo.author.name}
-                  </Box>
-                </Box>
-                <Box col="auto" px={2}>
-                  <Box color={buildColor} display="flex" alignItems="center">
-                    <Box forwardedAs={GoPulse} mr={2} />
-                    <span>
-                      #{build.number} {buildStatus}
-                    </span>
-                  </Box>
-                  <Box mt={3} display="flex" alignItems="center">
-                    <Box forwardedAs={FaRegClock} mr={2} />
-                    {moment(build.createdAt).fromNow()}
+                      col={{ xs: 1, md: 'auto' }}
+                      mt={{ xs: 3, md: 0 }}
+                      px={2}
+                    >
+                      <Box
+                        color={buildColor}
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <Box forwardedAs={GoPulse} mr={2} />
+                        <span>
+                          #{build.number} {buildStatus}
+                        </span>
+                      </Box>
+                      <Box mt={3} display="flex" alignItems="center">
+                        <Box forwardedAs={FaRegClock} mr={2} />
+                        {moment(build.createdAt).fromNow()}
+                      </Box>
+                    </Box>
                   </Box>
                 </Box>
               </Box>

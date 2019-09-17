@@ -13,6 +13,7 @@ import {
   HeaderSecondaryLink,
   TabList,
   RouterTabItem,
+  Text,
 } from 'components'
 import { Query } from 'containers/Apollo'
 import { useRouter } from 'containers/Router'
@@ -31,10 +32,12 @@ function hasWritePermission(repository) {
   return repository.permissions.includes('write')
 }
 
-const RepoTitlePart = styled.span`
+const RepoTitlePart = styled(Text)`
   margin: 0 2;
   color: white;
   text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   a&:hover {
     text-decoration: underline;
@@ -50,7 +53,10 @@ function RepositoryHeader() {
         <HeaderPrimary>
           <HeaderTitle>
             <Box forwardedAs={GoRepo} display="block" mt="6rpx" />
-            <RepoTitlePart as={Link} to={`/gh/${repository.owner.login}`}>
+            <RepoTitlePart
+              forwardedAs={Link}
+              to={`/gh/${repository.owner.login}`}
+            >
               {repository.owner.login}
             </RepoTitlePart>
             / <RepoTitlePart>{repository.name}</RepoTitlePart>
@@ -61,8 +67,10 @@ function RepositoryHeader() {
             rel="noopener noreferrer"
             href={`https://github.com/${repository.owner.login}/${repository.name}`}
           >
-            <Box forwardedAs={FaGithub} mr={1} /> {repository.owner.login}/
-            {repository.name}
+            <Box forwardedAs={FaGithub} mr={2} />
+            <Text>
+              {repository.owner.login}/{repository.name}
+            </Text>
           </HeaderSecondaryLink>
         </HeaderPrimary>
         <TabList>

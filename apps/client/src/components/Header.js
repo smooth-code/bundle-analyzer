@@ -18,11 +18,13 @@ export const HeaderTitle = styled.h2`
   align-items: center;
   flex: 1;
   font-size: 18;
+  margin-bottom: 2;
 
   ${up(
     'md',
     css`
       font-size: 24;
+      margin-bottom: 0;
     `,
   )}
 `
