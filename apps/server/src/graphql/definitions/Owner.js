@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { User, Organization, Repository } from '../../models'
+import { User, Organization } from '../../models'
 
 export const typeDefs = gql`
   enum OwnerType {
