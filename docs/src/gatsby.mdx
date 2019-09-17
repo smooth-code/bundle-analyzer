@@ -1,0 +1,23 @@
+---
+name: Setup with Gatsby
+route: /gatsby
+---
+
+# Setup with Gatsby
+
+Bundle Analyzer can easily be set up with Gatsby using an official plugin.
+
+## Usage
+
+To enable Bundle Analyzer in your Gatsby project, install `@bundle-analyzer/gatsby-plugin` and add it to your `gatsby-config.js`:
+
+```js
+plugins: [
+  {
+    resolve: '@bundle-analyzer/gatsby-plugin',
+    options: { token: '<repository-token>' },
+  },
+]
+```
+
+At the next deploy, your bundle will be automatically analyzed!

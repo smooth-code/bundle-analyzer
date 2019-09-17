@@ -1,0 +1,28 @@
+---
+name: Setup with CLI
+route: /gatsby
+---
+
+# Setup with CLI
+
+Bundle Analyzer is available as a CLI tool. You will get your stats uploaded in one command.
+
+## Usage
+
+First install the CLI tool in your project:
+
+```bash
+npm install @bundle-analyzer/cli
+```
+
+Then run the following command in your CI:
+
+```bash
+webpack --mode production --json | bundle-analyzer --token <your-repository-token>
+```
+
+If you already have stats, you can use `cat` to pipe them:
+
+```bash
+cat webpack-stats.json | bundle-analyzer --token <your-repository-token>
+```
