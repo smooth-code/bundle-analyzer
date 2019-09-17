@@ -25,6 +25,7 @@ import { AuthCallback } from 'pages/AuthCallback'
 import { NotFound } from 'pages/NotFound'
 import Privacy from 'pages/Privacy.md'
 import Terms from 'pages/Terms.md'
+import Security from 'pages/Security.md'
 
 export function App() {
   return (
@@ -68,6 +69,13 @@ export function App() {
                               path="/terms"
                               render={() => (
                                 <Markdown title="Terms">{Terms}</Markdown>
+                              )}
+                            />
+                            <Route
+                              exact
+                              path="/security"
+                              render={() => (
+                                <Markdown title="Security">{Security}</Markdown>
                               )}
                             />
                             <Route

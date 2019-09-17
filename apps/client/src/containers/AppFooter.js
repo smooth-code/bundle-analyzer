@@ -29,6 +29,9 @@ export function AppFooter() {
           <FooterLink as={Link} to="/privacy">
             Privacy
           </FooterLink>
+          <FooterLink as={Link} to="/security">
+            Security
+          </FooterLink>
           <FooterLink
             href="https://docs.bundle-analyzer.com"
             target="_blank"
