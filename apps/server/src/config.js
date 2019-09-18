@@ -2,6 +2,10 @@ import path from 'path'
 import convict from 'convict'
 import url from 'url'
 
+const workers = 3
+const maxConnectionsAllowed = 20
+const freeConnectionsForThirdTools = 2
+
 const config = convict({
   env: {
     doc: 'The application environment',
@@ -38,6 +42,20 @@ const config = convict({
       doc: 'Knex client',
       format: String,
       default: 'postgresql',
+    },
+    pool: {
+      min: {
+        doc: 'Minimum connections per pool',
+        format: Number,
+        default: 2,
+      },
+      max: {
+        doc: 'Maxium connections per pool',
+        format: Number,
+        default: Math.floor(
+          (maxConnectionsAllowed - freeConnectionsForThirdTools) / workers,
+        ),
+      },
     },
     connection: {
       host: {
