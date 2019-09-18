@@ -8,7 +8,7 @@ export SENTRY_ORG=bundle-analyzer
 VERSION=$(sentry-cli releases propose-version)
 
 # Create a release
-yarn sentry-cli releases new -p server $VERSION
+yarn sentry-cli releases new -p bundle-analyzer-server $VERSION
 
 # Associate commits with the release
 yarn sentry-cli releases set-commits --commit "smooth-code/bundle-analyzer@$VERSION" $VERSION
