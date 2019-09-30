@@ -1,6 +1,6 @@
 import 'modules/test-util/database/setup'
 import { factory } from 'modules/test-util'
-import { getCheckResult } from './sizeCompare'
+import { getCheckResult } from './sizeDiff'
 
 describe('#getCheckResult', () => {
   describe('with baseline branch', () => {

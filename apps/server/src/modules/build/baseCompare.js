@@ -65,6 +65,12 @@ const perPage = 100
 
 export async function getBaselineBuild(build) {
   await loadBuildDependencies(build)
+
+  // There is no baseline if the build is on baseline
+  if (build.repository.baselineBranch === build.branch) {
+    return null
+  }
+
   const octokit = await getBuildOctokit(build)
 
   const baseCommits = await getCommits({

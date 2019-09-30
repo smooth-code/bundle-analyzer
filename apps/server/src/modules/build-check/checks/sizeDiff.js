@@ -1,7 +1,6 @@
 import filesize from 'filesize'
 import markdownTable from 'markdown-table'
-import { getBaselineBuild } from 'modules/build'
-import { loadBuildCheckDependencies } from 'modules/build-check'
+import { getSizeDiffReport, loadBuildDependencies } from 'modules/build'
 
 export function getTotalAssetsSize(stats) {
   return stats.assets.reduce((sum, asset) => sum + asset.gzipSize, 0)
@@ -22,25 +21,24 @@ function getSummaryText({ percent, diff }) {
 function getDiffInfos(size, baseSize) {
   const diff = size - baseSize
   const symbol = diff === 0 ? '•' : diff > 0 ? '▲' : '▼'
-  const percent = Math.round((diff / baseSize) * 100 * 100) / 100
-  return { diff, symbol, percent }
+  const percent =
+    baseSize === 0 ? 100 : Math.round((diff / baseSize) * 100 * 100) / 100
+  const status = diff === 0 ? 'neutral' : diff > 0 ? 'warning' : 'success'
+  return { status, diff, symbol, percent }
 }
 
-function getAssetChange(buildAsset, baseAsset) {
-  const infos = getDiffInfos(buildAsset.size, baseAsset ? baseAsset.size : 0)
+function getAssetChange(asset, baseAsset) {
+  const infos = getDiffInfos(asset.size, baseAsset ? baseAsset.size : 0)
   if (infos.diff === 0) return '--'
-  return `${infos.symbol} ${infos.percent}% - ${filesize(buildAsset.size)}`
+  return `${infos.symbol} ${infos.percent}% - ${filesize(asset.size)}`
 }
 
-function getAssetTable(build, baselineBuild) {
+function getComparisonsTable(comparisons) {
   return markdownTable([
     ['Asset', 'Change (gzip)', 'Size', 'Gzip size', 'Brotli size'],
-    ...build.bundle.stats.assets.map(asset => {
-      const baseAsset = baselineBuild.bundle.stats.assets.find(
-        ({ name }) => asset.name === name,
-      )
+    ...comparisons.map(({ name, asset, baseAsset }) => {
       return [
-        asset.name,
+        name,
         getAssetChange(asset, baseAsset),
         filesize(asset.size),
         filesize(asset.gzipSize),
@@ -53,12 +51,12 @@ function getAssetTable(build, baselineBuild) {
 export const label = 'Size compare'
 
 export async function getCheckResult(buildCheck) {
-  await loadBuildCheckDependencies(buildCheck)
-  const { build } = buildCheck
+  const build = await buildCheck.$relatedQuery('build')
+  const sizeDiffReport = await getSizeDiffReport(build)
 
-  if (build.branch === build.repository.baselineBranch) {
+  if (sizeDiffReport.result === 'baseline') {
     return {
-      conclusion: 'neutral',
+      conclusion: sizeDiffReport.conclusion,
       output: {
         title: 'Baseline branch build',
         summary: 'This build serves as reference, nothing to compare.',
@@ -66,8 +64,9 @@ export async function getCheckResult(buildCheck) {
     }
   }
 
-  const baselineBuild = await getBaselineBuild(build)
-  if (!baselineBuild) {
+  await loadBuildDependencies(build)
+
+  if (sizeDiffReport.result === 'noBaseline') {
     return {
       conclusion: 'neutral',
       output: {
@@ -77,20 +76,15 @@ export async function getCheckResult(buildCheck) {
     }
   }
 
-  await Promise.all([
-    baselineBuild.$loadRelated('bundle'),
-    build.$loadRelated('bundle'),
-  ])
-
-  const buildSize = getTotalAssetsSize(build.bundle.stats)
-  const baseSize = getTotalAssetsSize(baselineBuild.bundle.stats)
-
-  const { diff, symbol, percent } = getDiffInfos(buildSize, baseSize)
-  const table = getAssetTable(build, baselineBuild)
+  const { diff, symbol, percent } = getDiffInfos(
+    sizeDiffReport.size,
+    sizeDiffReport.baseSize,
+  )
+  const table = getComparisonsTable(sizeDiffReport.comparisons)
   return {
     conclusion: 'neutral',
     output: {
-      title: `${filesize(buildSize)} — ${symbol} ${percent}%`,
+      title: `${filesize(sizeDiffReport.size)} — ${symbol} ${percent}%`,
       summary: `${getSummaryText({ diff, percent })}\n\n${table}`,
     },
   }

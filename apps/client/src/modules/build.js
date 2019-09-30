@@ -14,6 +14,7 @@ export function getStatusColor(status) {
     case 'neutral':
       return 'gray600'
     case 'pending':
+    case 'warning':
     default:
       return 'warning'
   }

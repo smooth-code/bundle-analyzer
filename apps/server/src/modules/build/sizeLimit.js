@@ -13,7 +13,7 @@ function getAssetCompressionSize(asset, compression) {
   }
 }
 
-export async function getSizeReport(build) {
+export async function getSizeLimitReport(build) {
   if (!build.bundle) {
     await build.$loadRelated('bundle')
   }

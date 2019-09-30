@@ -19,6 +19,7 @@ export class Build extends BaseModel {
       config: { type: 'object' },
       providerMetadata: { type: 'object' },
       bundleId: { type: 'string' },
+      baseBuildId: { type: 'string' },
     },
   })
 
@@ -29,6 +30,14 @@ export class Build extends BaseModel {
       join: {
         from: 'builds.repositoryId',
         to: 'repositories.id',
+      },
+    },
+    baseBuild: {
+      relation: BaseModel.BelongsToOneRelation,
+      modelClass: 'Build',
+      join: {
+        from: 'builds.baseBuildId',
+        to: 'builds.id',
       },
     },
     bundle: {
