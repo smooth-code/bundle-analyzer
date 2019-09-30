@@ -1,6 +1,6 @@
 export function getBuildStatus(build) {
   if (build.jobStatus === 'complete') {
-    return build.conclusion === 'success' ? 'success' : 'failure'
+    return build.conclusion
   }
   return 'pending'
 }
@@ -11,6 +11,8 @@ export function getStatusColor(status) {
       return 'success'
     case 'failure':
       return 'danger'
+    case 'neutral':
+      return 'gray600'
     case 'pending':
     default:
       return 'warning'

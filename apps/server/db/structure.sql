@@ -35,6 +35,24 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: build_checks; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.build_checks (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    github_id integer NOT NULL,
+    build_id uuid,
+    conclusion character varying(255),
+    name character varying(255),
+    job_status character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.build_checks OWNER TO postgres;
+
+--
 -- Name: builds; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -43,21 +61,36 @@ CREATE TABLE public.builds (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     repository_id uuid NOT NULL,
+    bundle_id uuid NOT NULL,
     name character varying(255) DEFAULT 'default'::character varying NOT NULL,
     branch character varying(255) NOT NULL,
     commit character varying(255) NOT NULL,
     job_status character varying(255) NOT NULL,
     number integer NOT NULL,
-    github_check_run_id integer,
     conclusion character varying(255),
     provider_metadata json,
-    stats json NOT NULL,
     commit_info json NOT NULL,
-    size_check_config json NOT NULL
+    config json NOT NULL
 );
 
 
 ALTER TABLE public.builds OWNER TO postgres;
+
+--
+-- Name: bundles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bundles (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    repository_id uuid,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    bundler character varying(255) NOT NULL,
+    stats json NOT NULL
+);
+
+
+ALTER TABLE public.bundles OWNER TO postgres;
 
 --
 -- Name: installation_repository_rights; Type: TABLE; Schema: public; Owner: postgres
@@ -192,7 +225,7 @@ CREATE TABLE public.repositories (
     user_id uuid,
     private boolean NOT NULL,
     baseline_branch character varying(255) DEFAULT 'master'::character varying NOT NULL,
-    size_check_config json NOT NULL
+    config json NOT NULL
 );
 
 
@@ -293,11 +326,27 @@ ALTER TABLE ONLY public.knex_migrations_lock ALTER COLUMN index SET DEFAULT next
 
 
 --
+-- Name: build_checks build_checks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.build_checks
+    ADD CONSTRAINT build_checks_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: builds builds_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.builds
     ADD CONSTRAINT builds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: bundles bundles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bundles
+    ADD CONSTRAINT bundles_pkey PRIMARY KEY (id);
 
 
 --
@@ -389,10 +438,38 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: build_checks_build_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX build_checks_build_id_index ON public.build_checks USING btree (build_id);
+
+
+--
+-- Name: build_checks_github_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX build_checks_github_id_index ON public.build_checks USING btree (github_id);
+
+
+--
+-- Name: build_checks_job_status_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX build_checks_job_status_index ON public.build_checks USING btree (job_status);
+
+
+--
 -- Name: builds_branch_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX builds_branch_index ON public.builds USING btree (branch);
+
+
+--
+-- Name: builds_bundle_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX builds_bundle_id_index ON public.builds USING btree (bundle_id);
 
 
 --
@@ -435,6 +512,13 @@ CREATE INDEX builds_number_index ON public.builds USING btree (number);
 --
 
 CREATE INDEX builds_repository_id_index ON public.builds USING btree (repository_id);
+
+
+--
+-- Name: bundles_repository_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX bundles_repository_id_index ON public.bundles USING btree (repository_id);
 
 
 --
@@ -613,11 +697,35 @@ CREATE INDEX users_login_index ON public.users USING btree (login);
 
 
 --
+-- Name: build_checks build_checks_build_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.build_checks
+    ADD CONSTRAINT build_checks_build_id_foreign FOREIGN KEY (build_id) REFERENCES public.builds(id);
+
+
+--
+-- Name: builds builds_bundle_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.builds
+    ADD CONSTRAINT builds_bundle_id_foreign FOREIGN KEY (bundle_id) REFERENCES public.bundles(id);
+
+
+--
 -- Name: builds builds_repository_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.builds
     ADD CONSTRAINT builds_repository_id_foreign FOREIGN KEY (repository_id) REFERENCES public.repositories(id);
+
+
+--
+-- Name: bundles bundles_repository_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bundles
+    ADD CONSTRAINT bundles_repository_id_foreign FOREIGN KEY (repository_id) REFERENCES public.repositories(id);
 
 
 --
@@ -722,4 +830,5 @@ ALTER TABLE ONLY public.user_repository_rights
 
 -- Knex migrations
 
-INSERT INTO knex_migrations(name, batch, migration_time) VALUES ('20190831180010_init.js', 1, NOW());
+INSERT INTO public.knex_migrations(name, batch, migration_time) VALUES ('20190831180010_init.js', 1, NOW());
+INSERT INTO public.knex_migrations(name, batch, migration_time) VALUES ('20190930114817_build-checks.js', 1, NOW());

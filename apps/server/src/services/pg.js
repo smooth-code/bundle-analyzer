@@ -4,6 +4,13 @@ import config from '../config'
 
 let knexInstance
 
+export function createKnex() {
+  return knex({
+    ...config.get('pg'),
+    ...knexSnakeCaseMappers(),
+  })
+}
+
 export function connect() {
   if (!knexInstance) {
     knexInstance = knex({

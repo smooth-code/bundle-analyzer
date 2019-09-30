@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node'
-import { getChannel } from '../../services/amqp'
+import { getChannel } from 'services/amqp'
 
 const serializeMessage = payload => Buffer.from(JSON.stringify(payload))
 const parseMessage = message => {
@@ -18,6 +18,9 @@ export function createJob(queue, consumer) {
   return {
     queue,
     async push(...args) {
+      if (consumer.push) {
+        await consumer.push(...args)
+      }
       const channel = await getChannel()
       await channel.assertQueue(queue, { durable: true })
       channel.sendToQueue(queue, serializeMessage({ args, attempts: 0 }), {

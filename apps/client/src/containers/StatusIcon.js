@@ -12,6 +12,8 @@ export function StatusIcon({ status, ...props }) {
       return <Box forwardedAs={FaCheck} color={buildColor} {...props} />
     case 'pending':
       return <Box forwardedAs={FaDotCircle} color={buildColor} {...props} />
+    case 'neutral':
+      return <Box forwardedAs={FaDotCircle} color={buildColor} {...props} />
     default:
       return null
   }

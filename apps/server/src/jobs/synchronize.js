@@ -1,8 +1,10 @@
-import { Synchronization } from '../models'
-import { createModelJob } from '../modules/jobs'
-import { synchronize } from '../modules/synchronizer'
+import { Synchronization } from 'models'
+import { createModelJob } from 'modules/jobs'
+import { synchronize } from 'modules/synchronizer'
 
-const job = createModelJob('synchronize', Synchronization, synchronize)
+const job = createModelJob('synchronize', Synchronization, {
+  perform: synchronize,
+})
 export default job
 
 export async function synchronizeFromInstallationId(installationId) {
@@ -12,7 +14,7 @@ export async function synchronizeFromInstallationId(installationId) {
     jobStatus: 'queued',
   })
 
-  job.push(synchronization.id)
+  await job.push(synchronization.id)
 }
 
 export async function synchronizeFromUserId(userId) {
@@ -22,5 +24,5 @@ export async function synchronizeFromUserId(userId) {
     jobStatus: 'queued',
   })
 
-  job.push(synchronization.id)
+  await job.push(synchronization.id)
 }

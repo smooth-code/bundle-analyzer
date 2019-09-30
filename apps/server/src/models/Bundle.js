@@ -1,6 +1,6 @@
+import config from 'config'
+import s3 from 'services/s3'
 import { BaseModel, mergeSchemas } from './util'
-import s3 from '../services/s3'
-import config from '../config'
 
 export class Bundle extends BaseModel {
   static tableName = 'bundles'

@@ -1,6 +1,6 @@
 import { App } from '@octokit/app'
 import Octokit from '@octokit/rest'
-import config from '../../config'
+import config from 'config'
 
 const app = new App({
   id: config.get('github.appId'),
@@ -26,9 +26,11 @@ export function getUserOctokit(user) {
   })
 }
 
-export const authorizationOctokit = new Octokit({
-  auth: {
-    username: config.get('github.clientId'),
-    password: config.get('github.clientSecret'),
-  },
-})
+export function getAuthorizationOctokit() {
+  return new Octokit({
+    auth: {
+      username: config.get('github.clientId'),
+      password: config.get('github.clientSecret'),
+    },
+  })
+}

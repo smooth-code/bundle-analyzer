@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
 import {
-  authorizationOctokit,
+  getAuthorizationOctokit,
   getUserOctokit,
   getInstallationOctokit,
-} from '../github/client'
+} from 'modules/github/client'
 import {
   Installation,
   Organization,
@@ -13,8 +13,8 @@ import {
   UserRepositoryRight,
   UserInstallationRight,
   InstallationRepositoryRight,
-} from '../../models'
-import config from '../../config'
+} from 'models'
+import config from 'config'
 
 export async function getOrCreateInstallation(payload) {
   const installation = await Installation.query()
@@ -27,7 +27,7 @@ export async function getOrCreateInstallation(payload) {
 
 async function checkAccessTokenValidity(accessToken) {
   try {
-    await authorizationOctokit.oauthAuthorizations.checkAuthorization({
+    await getAuthorizationOctokit().oauthAuthorizations.checkAuthorization({
       access_token: accessToken,
       client_id: config.get('github.clientId'),
     })

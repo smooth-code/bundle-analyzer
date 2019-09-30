@@ -1,4 +1,4 @@
-import { logger } from './util'
+import { logger } from 'modules/util'
 
 const SHUTDOWN_TIMEOUT = 3000
 

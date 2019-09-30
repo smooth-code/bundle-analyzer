@@ -1,5 +1,5 @@
+import { OWNER_TYPES } from 'constants'
 import { BaseModel, mergeSchemas } from './util'
-import { OWNER_TYPES } from '../constants'
 
 export class User extends BaseModel {
   static tableName = 'users'

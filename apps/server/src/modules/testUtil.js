@@ -1,7 +1,7 @@
 /* global jasmine */
 
-import * as services from '../services'
-import * as database from '../services/pg'
+import * as services from 'services'
+import * as database from 'services/pg'
 
 const KNEX_TABLES = ['knex_migrations', 'knex_migrations_lock']
 

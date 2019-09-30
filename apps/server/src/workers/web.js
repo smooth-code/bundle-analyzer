@@ -1,11 +1,11 @@
-import '../init'
+import 'init'
 
 import http from 'http'
-import config from '../config'
-import { logger } from '../modules/util'
-import { addTeardown } from '../modules/teardown'
-import * as services from '../services'
-import api from '../api'
+import config from 'config'
+import { logger } from 'modules/util'
+import { addTeardown } from 'modules/teardown'
+import * as services from 'services'
+import api from 'api'
 
 const server = http.createServer(api)
 

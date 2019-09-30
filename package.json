@@ -6,36 +6,39 @@
   "scripts": {
     "setup": "yarn workspace server db:create && yarn workspace server db:migrate",
     "dev": "concurrently \"yarn workspace server smee\" \"heroku local -f Procfile.dev -p 3000\" \"yarn workspace client dev\"",
-    "heroku-postbuild": "yarn workspace server run build"
+    "heroku-postbuild": "yarn workspace server run build",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^3.2.0",
     "concurrently": "^4.1.2",
     "dotenv": "^8.1.0",
-    "eslint": "^6.4.0",
+    "eslint": "6.4.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.3.0",
     "eslint-config-smooth": "^2.1.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
-    "eslint-plugin-react-hooks": "^2.0.1",
+    "eslint-plugin-react-hooks": "^2.1.1",
     "html-webpack-plugin": "^3.2.0",
-    "nodemon": "^1.19.1",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.3",
     "prettier": "^1.18.2",
-    "webpack": "^4.40.2",
-    "webpack-cli": "^3.3.7",
-    "webpack-dev-server": "^3.8.0"
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.1"
   },
   "dependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/node": "^7.5.5",
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/node": "^7.6.2",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-env": "^7.6.2",
     "@babel/preset-react": "^7.0.0",
-    "@sentry/cli": "^1.47.1"
+    "@sentry/cli": "^1.47.2"
   }
 }
