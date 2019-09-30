@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
-import { getSizeReport } from 'modules/build'
+import { getSizeLimitReport, getSizeDiffReport } from 'modules/build'
 import { getRepository } from './Repository'
 
 export const typeDefs = gql`
-  enum BuildConclusion {
+  enum Conclusion {
     success
     failure
     neutral
@@ -28,17 +28,44 @@ export const typeDefs = gql`
     none
   }
 
-  type SizeReport {
-    conclusion: BuildConclusion!
-    checks: [SizeReportCheck!]!
+  type SizeLimitReport {
+    conclusion: Conclusion!
+    checks: [SizeLimitReportCheck!]!
   }
 
-  type SizeReportCheck {
+  type SizeLimitReportCheck {
     name: String!
-    conclusion: BuildConclusion!
+    conclusion: Conclusion!
     compareSize: Int!
     compareMaxSize: Int!
     compareCompression: Compression!
+  }
+
+  enum SizeDiffResult {
+    baseline
+    noBaseline
+    diff
+  }
+
+  type Asset {
+    name: String!
+    size: Int!
+    gzipSize: Int!
+    brotliSize: Int!
+  }
+
+  type SizeDiffReportComparison {
+    name: String!
+    asset: Asset!
+    baseAsset: Asset!
+  }
+
+  type SizeDiffReport {
+    conclusion: Conclusion!
+    result: SizeDiffResult!
+    size: Int
+    baseSize: Int
+    comparisons: [SizeDiffReportComparison]
   }
 
   type BundleStatsAsset {
@@ -68,11 +95,13 @@ export const typeDefs = gql`
     commit: String!
     number: Int!
     jobStatus: JobStatus!
-    conclusion: BuildConclusion
+    conclusion: Conclusion
     commitInfo: Commit!
-    sizeReport: SizeReport
+    sizeLimitReport: SizeLimitReport
+    sizeDiffReport: SizeDiffReport
     repository: Repository!
     bundle: Bundle!
+    baseBuild: Build
   }
 
   type BuildResult {
@@ -92,8 +121,11 @@ export const resolvers = {
     },
   },
   Build: {
-    async sizeReport(build) {
-      return getSizeReport(build)
+    async sizeLimitReport(build) {
+      return getSizeLimitReport(build)
+    },
+    async sizeDiffReport(build) {
+      return getSizeDiffReport(build)
     },
     async repository(build) {
       return build.$relatedQuery('repository')
@@ -108,6 +140,9 @@ export const resolvers = {
       if (build.checks.some(check => check.conclusion === 'success'))
         return 'success'
       return 'neutral'
+    },
+    async baseBuild(build) {
+      return build.$relatedQuery('baseBuild')
     },
   },
   Query: {

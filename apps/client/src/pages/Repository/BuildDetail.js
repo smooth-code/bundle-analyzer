@@ -3,6 +3,7 @@ import React from 'react'
 import gql from 'graphql-tag'
 import styled, { Box } from '@xstyled/styled-components'
 import { Helmet } from 'react-helmet'
+import filesize from 'filesize'
 // import { useMutation } from '@apollo/react-hooks'
 import {
   Container,
@@ -15,7 +16,7 @@ import {
   FadeLink,
 } from 'components'
 import moment from 'moment'
-import { Query } from 'containers/Apollo'
+import { useQuery } from 'containers/Apollo'
 import { FaRegClock } from 'react-icons/fa'
 import { GoGitCommit, GoGitBranch, GoPulse } from 'react-icons/go'
 import { getBuildStatus, getStatusColor } from 'modules/build'
@@ -87,7 +88,7 @@ export const BuildDetailFragment = gql`
         modulesNumber
       }
     }
-    sizeReport {
+    sizeLimitReport {
       checks {
         name
         conclusion
@@ -96,8 +97,179 @@ export const BuildDetailFragment = gql`
         compareCompression
       }
     }
+    sizeDiffReport {
+      result
+      size
+      baseSize
+      comparisons {
+        name
+        asset {
+          name
+          size
+          gzipSize
+          brotliSize
+        }
+        baseAsset {
+          name
+          size
+          gzipSize
+          brotliSize
+        }
+      }
+    }
   }
 `
+
+function SizeLimit({ build, ...props }) {
+  if (!build.sizeLimitReport) return null
+  return (
+    <Box {...props}>
+      <Card color="white">
+        <CardHeader>
+          <CardTitle>Size limit</CardTitle>
+        </CardHeader>
+        <CardBody>
+          {build.sizeLimitReport.checks.length === 0 ? (
+            <Box>
+              No size limit configured on the project.{' '}
+              <FadeLink
+                target="_blank"
+                rel="noopener noreferer"
+                href="https://docs.bundle-analyzer.com"
+                color="white"
+              >
+                See documentation to learn how to configure size limits
+              </FadeLink>
+              .
+            </Box>
+          ) : (
+            <Box style={{ overflowX: 'auto' }}>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th style={{ width: 160 }}>Compression</th>
+                    <th style={{ width: 120 }}>Size</th>
+                    <th style={{ width: 120 }}>Max size</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {build.sizeLimitReport.checks.map((check, index) => (
+                    <tr key={index}>
+                      <Box
+                        forwardedAs="td"
+                        color={getStatusColor(check.conclusion)}
+                      >
+                        <Box display="flex" alignItems="center">
+                          <StatusIcon status={check.conclusion} mr={2} />
+                          {check.name}
+                        </Box>
+                      </Box>
+                      <td>{check.compareCompression}</td>
+                      <td>
+                        <FileSize>{check.compareSize}</FileSize>
+                      </td>
+                      <td>
+                        <FileSize>{check.compareMaxSize}</FileSize>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Box>
+          )}
+        </CardBody>
+      </Card>
+    </Box>
+  )
+}
+
+function getDiffInfos(size, baseSize) {
+  const diff = size - baseSize
+  const symbol = diff === 0 ? '•' : diff > 0 ? '▲' : '▼'
+  const percent =
+    baseSize === 0 ? 100 : Math.round((diff / baseSize) * 100 * 100) / 100
+  const status = diff === 0 ? 'neutral' : diff > 0 ? 'warning' : 'success'
+  return { status, diff, symbol, percent }
+}
+
+function getAssetChange(asset, baseAsset) {
+  const infos = getDiffInfos(asset.size, baseAsset ? baseAsset.size : 0)
+  if (infos.diff === 0) return '--'
+  return `${infos.symbol} ${infos.percent}% - ${filesize(asset.size)}`
+}
+
+function SizeDiff({ build, ...props }) {
+  if (!build.sizeDiffReport) return null
+  return (
+    <Box {...props}>
+      <Card color="white">
+        <CardHeader>
+          <CardTitle>Size diff</CardTitle>
+        </CardHeader>
+        <CardBody>
+          {build.sizeDiffReport.result === 'baseline' &&
+            'This build serves as reference, nothing to compare.'}
+          {build.sizeDiffReport.result === 'noBaseline' &&
+            `There is no available build on ${build.repository.baselineBranch} to compare.`}
+          {build.sizeDiffReport.result === 'diff' && (
+            <Box style={{ overflowX: 'auto' }}>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th style={{ width: 200 }}>Change (gzip)</th>
+                    <th style={{ width: 100 }}>Size</th>
+                    <th style={{ width: 100 }}>Gzipped</th>
+                    <th style={{ width: 100 }}>Brotlified</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {build.sizeDiffReport.comparisons.map(
+                    ({ name, asset, baseAsset }, index) => {
+                      const infos = getDiffInfos(
+                        asset.size,
+                        baseAsset ? baseAsset.size : 0,
+                      )
+                      return (
+                        <tr key={index}>
+                          <Box
+                            forwardedAs="td"
+                            color={getStatusColor(infos.status)}
+                          >
+                            <Box display="flex" alignItems="center">
+                              <StatusIcon status={infos.status} mr={2} />
+                              {name}
+                            </Box>
+                          </Box>
+                          <Box
+                            forwardedAs="td"
+                            color={getStatusColor(infos.status)}
+                          >
+                            {getAssetChange(asset, baseAsset)}
+                          </Box>
+                          <td>
+                            <FileSize>{asset.size}</FileSize>
+                          </td>
+                          <td>
+                            <FileSize>{asset.gzipSize}</FileSize>
+                          </td>
+                          <td>
+                            <FileSize>{asset.brotliSize}</FileSize>
+                          </td>
+                        </tr>
+                      )
+                    },
+                  )}
+                </tbody>
+              </Table>
+            </Box>
+          )}
+        </CardBody>
+      </Card>
+    </Box>
+  )
+}
 
 export function Build({ build }) {
   const {
@@ -192,66 +364,8 @@ export function Build({ build }) {
             </CardBody>
           </Card>
         </Box>
-        {build.sizeReport && (
-          <Box col={1} p={2}>
-            <Card color="white">
-              <CardHeader>
-                <CardTitle>Size checks</CardTitle>
-              </CardHeader>
-              <CardBody>
-                {build.sizeReport.checks.length === 0 ? (
-                  <Box>
-                    No size check configured on the project.{' '}
-                    <FadeLink
-                      target="_blank"
-                      rel="noopener noreferer"
-                      href="https://docs.bundle-analyzer.com"
-                      color="white"
-                    >
-                      See documentation to learn how to configure size checks
-                    </FadeLink>
-                    .
-                  </Box>
-                ) : (
-                  <Box style={{ overflowX: 'auto' }}>
-                    <Table>
-                      <thead>
-                        <tr>
-                          <th>Asset</th>
-                          <th style={{ width: 150 }}>Compression</th>
-                          <th style={{ width: 120 }}>Size</th>
-                          <th style={{ width: 120 }}>Max size</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {build.sizeReport.checks.map((check, index) => (
-                          <tr key={index}>
-                            <Box
-                              forwardedAs="td"
-                              color={getStatusColor(check.conclusion)}
-                            >
-                              <Box display="flex" alignItems="center">
-                                <StatusIcon status={check.conclusion} mr={2} />
-                                {check.name}
-                              </Box>
-                            </Box>
-                            <td>{check.compareCompression}</td>
-                            <td>
-                              <FileSize>{check.compareSize}</FileSize>
-                            </td>
-                            <td>
-                              <FileSize>{check.compareMaxSize}</FileSize>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Box>
-                )}
-              </CardBody>
-            </Card>
-          </Box>
-        )}
+        <SizeLimit col={1} p={2} build={build} />
+        <SizeDiff col={1} p={2} build={build} />
         <Box col={{ xs: 1, md: 1 / 4 }} p={2}>
           <Card color="white">
             <CardHeader>
@@ -331,46 +445,39 @@ export function Build({ build }) {
   )
 }
 
+const BUILD_QUERY = gql`
+  query Build($ownerLogin: String!, $repositoryName: String!, $number: Int!) {
+    build(
+      ownerLogin: $ownerLogin
+      repositoryName: $repositoryName
+      number: $number
+    ) {
+      ...BuildDetailFragment
+    }
+  }
+
+  ${BuildDetailFragment}
+`
+
 export function BuildDetail({
   match: {
     params: { buildNumber },
   },
 }) {
   const repository = useRepository()
+  const { loading, data: { build } = {} } = useQuery(BUILD_QUERY, {
+    variables: {
+      ownerLogin: repository.owner.login,
+      repositoryName: repository.name,
+      number: Number(buildNumber),
+    },
+  })
   return (
     <>
       <Helmet>
         <title>{`Build #${buildNumber}`}</title>
       </Helmet>
-      <Query
-        query={gql`
-          query Build(
-            $ownerLogin: String!
-            $repositoryName: String!
-            $number: Int!
-          ) {
-            build(
-              ownerLogin: $ownerLogin
-              repositoryName: $repositoryName
-              number: $number
-            ) {
-              ...BuildDetailFragment
-            }
-          }
-
-          ${BuildDetailFragment}
-        `}
-        variables={{
-          ownerLogin: repository.owner.login,
-          repositoryName: repository.name,
-          number: Number(buildNumber),
-        }}
-      >
-        {({ build }) => {
-          if (!build) return <NotFound />
-          return <Build build={build} />
-        }}
-      </Query>
+      {build && !loading ? <Build build={build} /> : <NotFound />}
     </>
   )
 }

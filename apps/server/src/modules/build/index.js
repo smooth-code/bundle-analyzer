@@ -1,4 +1,5 @@
 export * from './baseCompare'
 export * from './githubStatus'
 export * from './misc'
-export * from './sizeReport'
+export * from './sizeLimit'
+export * from './sizeDiff'

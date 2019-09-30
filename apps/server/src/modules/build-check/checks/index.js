@@ -1,4 +1,4 @@
 import * as sizeLimit from './sizeLimit'
-import * as sizeCompare from './sizeCompare'
+import * as sizeDiff from './sizeDiff'
 
-export { sizeLimit, sizeCompare }
+export { sizeLimit, sizeDiff }

@@ -10,11 +10,8 @@ export async function loadBuildDependencies(build) {
   }
 }
 
-const buildOctokits = new WeakMap()
-
 export async function getBuildOctokit(build) {
-  const fromCache = buildOctokits.get(build)
-  if (fromCache) return fromCache
+  if (build.octokit) return build.octokit
   await loadBuildDependencies(build)
   const [installation] = build.repository.installations
   if (!installation) {
@@ -23,7 +20,7 @@ export async function getBuildOctokit(build) {
     )
   }
   const octokit = getInstallationOctokit(installation)
-  buildOctokits.set(build, octokit)
+  build.octokit = octokit
   return octokit
 }
 
