@@ -61,6 +61,7 @@ export const BuildDetailFragment = gql`
     repository {
       id
       name
+      baselineBranch
       owner {
         id
         login
