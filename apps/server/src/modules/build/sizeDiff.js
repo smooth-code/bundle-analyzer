@@ -17,7 +17,7 @@ function getComparisons(build, baselineBuild) {
     const name = getUniqueAssetName(asset)
     const baseAsset =
       baselineBuild.bundle.stats.assets.find(
-        ({ name }) => getUniqueAssetName(asset) === name,
+        baseAsset => getUniqueAssetName(baseAsset) === name,
       ) || null
     return {
       name,
