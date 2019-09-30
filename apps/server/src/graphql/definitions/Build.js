@@ -101,6 +101,14 @@ export const resolvers = {
     async bundle(build) {
       return build.$relatedQuery('bundle')
     },
+    async conclusion(build) {
+      await build.$loadRelated('checks')
+      if (build.checks.some(check => check.conclusion === 'failure'))
+        return 'failure'
+      if (build.checks.some(check => check.conclusion === 'success'))
+        return 'success'
+      return 'neutral'
+    },
   },
   Query: {
     async build(rootObj, { ownerLogin, repositoryName, number }, context) {
