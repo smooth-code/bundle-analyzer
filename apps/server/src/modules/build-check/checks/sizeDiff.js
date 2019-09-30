@@ -22,7 +22,7 @@ function getDiffInfos(size, baseSize) {
   const diff = size - baseSize
   const symbol = diff === 0 ? '•' : diff > 0 ? '▲' : '▼'
   const percent =
-    baseSize === 0 ? 100 : Math.round((diff / baseSize) * 100 * 100) / 100
+    baseSize === 0 ? 100 : Math.round((diff / baseSize) * 100 * 1000) / 1000
   const status = diff === 0 ? 'neutral' : diff > 0 ? 'warning' : 'success'
   return { status, diff, symbol, percent }
 }
@@ -30,7 +30,7 @@ function getDiffInfos(size, baseSize) {
 function getAssetChange(asset, baseAsset) {
   const infos = getDiffInfos(asset.size, baseAsset ? baseAsset.size : 0)
   if (infos.diff === 0) return '--'
-  return `${infos.symbol} ${infos.percent}% - ${filesize(asset.size)}`
+  return `${infos.symbol} ${infos.percent}% - ${filesize(infos.diff)}`
 }
 
 function getComparisonsTable(comparisons) {
@@ -84,7 +84,9 @@ export async function getCheckResult(buildCheck) {
   return {
     conclusion: 'neutral',
     output: {
-      title: `${filesize(sizeDiffReport.size)} — ${symbol} ${percent}%`,
+      title: `${filesize(
+        sizeDiffReport.size,
+      )} — ${symbol} ${percent}% (${filesize(diff)})`,
       summary: `${getSummaryText({ diff, percent })}\n\n${table}`,
     },
   }
