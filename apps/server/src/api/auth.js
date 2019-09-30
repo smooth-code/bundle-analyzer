@@ -2,9 +2,9 @@ import { Router } from 'express'
 import axios from 'axios'
 import asyncHandler from 'express-async-handler'
 import bodyParser from 'body-parser'
-import { getUserOctokit } from '../modules/github'
-import { User } from '../models'
-import { synchronizeFromUserId } from '../jobs/synchronize'
+import { getUserOctokit } from 'modules/github'
+import { User } from 'models'
+import { synchronizeFromUserId } from 'jobs/synchronize'
 
 const router = new Router()
 

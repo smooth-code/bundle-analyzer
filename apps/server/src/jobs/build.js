@@ -1,45 +1,16 @@
-import { Build } from '../models'
-import { createModelJob } from '../modules/jobs'
-import { getInstallationOctokit } from '../modules/github/client'
-import { getSizeReport, getGithubCheckInfo } from '../modules/size-check'
+import { Build } from 'models'
+import { createModelJob } from 'modules/jobs'
+import { notifyBuildGitHubStatus } from 'modules/build'
+import { createBuildCheck } from './buildCheck'
 
-export async function runBuild(build) {
-  build.bundle = await build.$relatedQuery('bundle')
-  const repository = await build.$relatedQuery('repository')
-  if (!repository) {
-    throw new Error(`Repository not found`)
-  }
-  const owner = await repository.$relatedOwner()
-  const [installation] = await repository.$relatedQuery('installations')
-  if (!installation) {
-    throw new Error(`Installation not found for repository "${repository.id}"`)
-  }
-
-  const octokit = getInstallationOctokit(installation)
-  await octokit.checks.update({
-    owner: owner.login,
-    repo: repository.name,
-    check_run_id: build.githubCheckRunId,
-    status: 'in_progress',
-  })
-
-  const sizeReport = getSizeReport(build)
-  const { title, summary } = getGithubCheckInfo(sizeReport)
-
-  await build.$query().patch({ conclusion: sizeReport.conclusion })
-
-  await octokit.checks.update({
-    owner: owner.login,
-    repo: repository.name,
-    check_run_id: build.githubCheckRunId,
-    status: 'completed',
-    conclusion: sizeReport.conclusion,
-    output: {
-      title,
-      summary,
-    },
-  })
+async function perform(build) {
+  await build.$query().patch({ conclusion: 'neutral' })
+  await Promise.all([
+    createBuildCheck({ name: 'sizeLimit', buildId: build.id }),
+    createBuildCheck({ name: 'sizeCompare', buildId: build.id }),
+  ])
+  await notifyBuildGitHubStatus(build, 'success')
 }
 
-const job = createModelJob('build', Build, runBuild)
+const job = createModelJob('build', Build, { perform })
 export default job

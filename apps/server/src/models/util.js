@@ -40,7 +40,7 @@ export class BaseModel extends Model {
   static modelPaths = [__dirname]
 
   // http://vincit.github.io/objection.js/#defaulteageralgorithm
-  static defaultEagerAlgorithm = Model.JoinEagerAlgorithm
+  // static defaultEagerAlgorithm = Model.JoinEagerAlgorithm
 
   static get useLimitInFirst() {
     return true

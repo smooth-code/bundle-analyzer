@@ -1,3 +1,4 @@
+import { modelSchema } from 'modules/jobs/model'
 import { BaseModel, mergeSchemas } from './util'
 
 const NEXT_NUMBER = Symbol('nextNumber')
@@ -5,16 +6,15 @@ const NEXT_NUMBER = Symbol('nextNumber')
 export class Build extends BaseModel {
   static tableName = 'builds'
 
-  static jsonSchema = mergeSchemas(BaseModel.jsonSchema, {
-    required: ['repositoryId', 'bundleId', 'branch', 'commit', 'jobStatus'],
+  static jsonSchema = mergeSchemas(BaseModel.jsonSchema, modelSchema, {
+    required: ['repositoryId', 'bundleId', 'branch', 'commit'],
     properties: {
       repositoryId: { type: 'string' },
       branch: { type: 'string' },
       commit: { type: 'string' },
       name: { type: 'string' },
-      jobStatus: { type: 'string' },
+      conclusion: { type: 'string', enum: ['success', 'failure', 'neutral'] },
       number: { type: 'integer' },
-      githubCheckRunId: { type: 'integer' },
       commitInfo: { type: 'object' },
       config: { type: 'object' },
       providerMetadata: { type: 'object' },

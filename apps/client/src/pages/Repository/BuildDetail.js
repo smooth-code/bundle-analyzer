@@ -199,40 +199,55 @@ export function Build({ build }) {
                 <CardTitle>Size checks</CardTitle>
               </CardHeader>
               <CardBody>
-                <Box style={{ overflowX: 'auto' }}>
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th>Asset</th>
-                        <th style={{ width: 150 }}>Compression</th>
-                        <th style={{ width: 120 }}>Size</th>
-                        <th style={{ width: 120 }}>Max size</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {build.sizeReport.checks.map((check, index) => (
-                        <tr key={index}>
-                          <Box
-                            forwardedAs="td"
-                            color={getStatusColor(check.conclusion)}
-                          >
-                            <Box display="flex" alignItems="center">
-                              <StatusIcon status={check.conclusion} mr={2} />
-                              {check.name}
-                            </Box>
-                          </Box>
-                          <td>{check.compareCompression}</td>
-                          <td>
-                            <FileSize>{check.compareSize}</FileSize>
-                          </td>
-                          <td>
-                            <FileSize>{check.compareMaxSize}</FileSize>
-                          </td>
+                {build.sizeReport.checks.length === 0 ? (
+                  <Box>
+                    No size check configured on the project.{' '}
+                    <FadeLink
+                      target="_blank"
+                      rel="noopener noreferer"
+                      href="https://docs.bundle-analyzer.com"
+                      color="white"
+                    >
+                      See documentation to learn how to configure size checks
+                    </FadeLink>
+                    .
+                  </Box>
+                ) : (
+                  <Box style={{ overflowX: 'auto' }}>
+                    <Table>
+                      <thead>
+                        <tr>
+                          <th>Asset</th>
+                          <th style={{ width: 150 }}>Compression</th>
+                          <th style={{ width: 120 }}>Size</th>
+                          <th style={{ width: 120 }}>Max size</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </Box>
+                      </thead>
+                      <tbody>
+                        {build.sizeReport.checks.map((check, index) => (
+                          <tr key={index}>
+                            <Box
+                              forwardedAs="td"
+                              color={getStatusColor(check.conclusion)}
+                            >
+                              <Box display="flex" alignItems="center">
+                                <StatusIcon status={check.conclusion} mr={2} />
+                                {check.name}
+                              </Box>
+                            </Box>
+                            <td>{check.compareCompression}</td>
+                            <td>
+                              <FileSize>{check.compareSize}</FileSize>
+                            </td>
+                            <td>
+                              <FileSize>{check.compareMaxSize}</FileSize>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </Box>
+                )}
               </CardBody>
             </Card>
           </Box>

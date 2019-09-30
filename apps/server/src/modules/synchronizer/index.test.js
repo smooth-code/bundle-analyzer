@@ -1,5 +1,5 @@
-import { setTestsTimeout, useDatabase } from '../testUtil'
-import { Installation, Synchronization } from '../../models'
+import { setTestsTimeout, useDatabase } from 'modules/testUtil'
+import { Installation, Synchronization } from 'models'
 import { synchronize } from '.'
 
 xdescribe('synchronizer', () => {

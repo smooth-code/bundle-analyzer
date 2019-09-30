@@ -1,5 +1,5 @@
 import amqp from 'amqplib'
-import config from '../config'
+import config from 'config'
 
 let amqpConnectionPromise
 

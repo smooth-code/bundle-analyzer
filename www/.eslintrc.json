@@ -1,0 +1,3 @@
+{
+  "extends": ["smooth/react", "smooth/browser"]
+}

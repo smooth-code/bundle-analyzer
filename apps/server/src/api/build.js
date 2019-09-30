@@ -3,11 +3,11 @@ import { Router } from 'express'
 import asyncHandler from 'express-async-handler'
 import { HttpError } from 'express-err'
 import bodyParser from 'body-parser'
-import { Build, Bundle, Repository } from '../models'
-import buildJob from '../jobs/build'
-import { getInstallationOctokit } from '../modules/github/client'
-import config from '../config'
-import { validateConfig } from '../modules/config'
+import { Build, Bundle, Repository } from 'models'
+import buildJob from 'jobs/build'
+import { getInstallationOctokit } from 'modules/github/client'
+import { validateConfig } from 'modules/config'
+import { notifyBuildGitHubStatus } from 'modules/build'
 
 const router = new Router()
 
@@ -89,9 +89,9 @@ router.post(
       throw new HttpError(400, `Installation not found for repository`)
     }
 
-    const owner = await req.repository.$relatedOwner()
-
     const octokit = getInstallationOctokit(installation)
+
+    const owner = await req.repository.$relatedOwner()
 
     let commitInfo
     try {
@@ -131,19 +131,7 @@ router.post(
       },
     })
 
-    const { data: checkRun } = await octokit.checks.create({
-      owner: owner.login,
-      repo: req.repository.name,
-      name: 'bundle-analyzer',
-      head_sha: build.commit,
-      external_id: build.id,
-      status: 'queued',
-      details_url: `${config.get('appBaseUrl')}/gh/${owner.login}/${
-        req.repository.name
-      }/builds/${build.number}`,
-    })
-
-    await build.$query().patch({ githubCheckRunId: checkRun.id })
+    await notifyBuildGitHubStatus(build, 'pending')
     await buildJob.push(build.id)
 
     res.send(build)

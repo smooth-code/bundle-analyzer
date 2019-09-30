@@ -1,5 +1,5 @@
-import { logger } from '../util'
-import { getChannel } from '../../services/amqp'
+import { getChannel } from 'services/amqp'
+import { logger } from 'modules/util'
 
 export async function consumeJobs(jobs) {
   try {

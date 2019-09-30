@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
-import { Repository } from '../../models'
+import { validateConfig } from 'modules/config'
+import { Repository } from 'models'
 import { getOwner } from './Owner'
-import { validateConfig } from '../../modules/config'
 
 export const typeDefs = gql`
   type Repository {

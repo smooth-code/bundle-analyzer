@@ -1,5 +1,5 @@
+import { modelSchema } from 'modules/jobs/model'
 import { BaseModel, mergeSchemas } from './util'
-import { modelSchema } from '../modules/jobs/model'
 
 export class Synchronization extends BaseModel {
   static tableName = 'synchronizations'

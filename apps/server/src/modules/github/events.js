@@ -1,6 +1,6 @@
 /* eslint-disable default-case */
-import { synchronizeFromInstallationId } from '../../jobs/synchronize'
-import { getOrCreateInstallation } from '../synchronizer/github'
+import { synchronizeFromInstallationId } from 'jobs/synchronize'
+import { getOrCreateInstallation } from 'modules/synchronizer/github'
 
 export async function handleGitHubEvents({ name, payload }) {
   try {

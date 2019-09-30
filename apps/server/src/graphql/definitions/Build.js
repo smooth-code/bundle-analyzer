@@ -1,11 +1,12 @@
 import gql from 'graphql-tag'
-import { getSizeReport } from '../../modules/size-check'
+import { getSizeReport } from 'modules/build'
 import { getRepository } from './Repository'
 
 export const typeDefs = gql`
   enum BuildConclusion {
     success
     failure
+    neutral
   }
 
   type CommitAuthor {
@@ -92,7 +93,6 @@ export const resolvers = {
   },
   Build: {
     async sizeReport(build) {
-      build.bundle = await build.$relatedQuery('bundle')
       return getSizeReport(build)
     },
     async repository(build) {
