@@ -49,6 +49,7 @@ async function perform(buildCheck) {
     throw new Error(`Unknown check ${buildCheck.name}`)
   }
   const checkResult = await check.getCheckResult(buildCheck)
+  await buildCheck.$query().patch({ conclusion: checkResult.conclusion })
   await octokit.checks.update({
     owner: build.repository.owner.login,
     repo: build.repository.name,

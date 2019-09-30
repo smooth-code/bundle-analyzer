@@ -39,6 +39,14 @@ export class Build extends BaseModel {
         to: 'bundles.id',
       },
     },
+    checks: {
+      relation: BaseModel.HasManyRelation,
+      modelClass: 'BuildCheck',
+      join: {
+        from: 'builds.id',
+        to: 'build_checks.buildId',
+      },
+    },
   }
 
   $beforeInsert(queryContext) {
