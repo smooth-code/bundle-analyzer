@@ -19,7 +19,7 @@ export class Build extends BaseModel {
       config: { type: 'object' },
       providerMetadata: { type: 'object' },
       bundleId: { type: 'string' },
-      baseBuildId: { type: 'string' },
+      baseBuildId: { type: ['string', null] },
     },
   })
 
