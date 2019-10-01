@@ -11,9 +11,13 @@ export function getTotalAssetsSize(stats) {
 
 function getUniqueAssetName(asset) {
   const ext = path.extname(asset.name)
-  return asset.chunkNames.length
-    ? `${asset.chunkNames.sort().join('-')}${ext}`
-    : asset.name
+  if (asset.chunkNames.length) {
+    return `${asset.chunkNames.sort().join('-')}${ext}`
+  }
+  if (asset.chunks.length) {
+    return `${asset.chunks.sort().join('-')}-bundle${ext}`
+  }
+  return asset.name
 }
 
 function getComparisons(build, baselineBuild) {
