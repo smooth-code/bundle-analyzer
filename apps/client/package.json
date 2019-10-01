@@ -26,6 +26,8 @@
     "react-icons": "^3.7.0",
     "react-markdown": "^4.2.2",
     "react-router-dom": "^5.1.1",
+    "react-use-dimensions": "^1.2.1",
+    "react-vis": "^1.11.7",
     "reakit": "^1.0.0-beta.8",
     "regenerator-runtime": "^0.13.3",
     "store": "^2.0.12",

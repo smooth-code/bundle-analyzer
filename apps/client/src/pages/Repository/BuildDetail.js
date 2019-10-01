@@ -17,6 +17,8 @@ import {
 } from 'components'
 import moment from 'moment'
 import { useQuery } from 'containers/Apollo'
+import { StatsLoader } from 'containers/StatsLoader'
+import { StatsSunburst } from 'containers/StatsSunburst'
 import { FaRegClock } from 'react-icons/fa'
 import { GoGitCommit, GoGitBranch, GoPulse } from 'react-icons/go'
 import { getBuildStatus, getStatusColor } from 'modules/build'
@@ -77,6 +79,7 @@ export const BuildDetailFragment = gql`
     }
     bundle {
       id
+      webpackStatsUrl
       stats {
         assets {
           name
@@ -401,7 +404,18 @@ export function Build({ build }) {
             <CardStat>{stats.assets.length}</CardStat>
           </Card>
         </Box>
-
+        <Box col={1} p={2}>
+          <Card color="white">
+            <CardHeader>
+              <CardTitle>Modules</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <StatsLoader url={build.bundle.webpackStatsUrl}>
+                {stats => <StatsSunburst stats={stats} />}
+              </StatsLoader>
+            </CardBody>
+          </Card>
+        </Box>
         <Box col={1} p={2}>
           <Card color="white">
             <CardHeader>
