@@ -2,7 +2,7 @@
   "files": [
     {
       "test": "*.js",
-      "maxSize": "320 kb",
+      "maxSize": "340 kb",
       "compression": "gzip"
     }
   ]
