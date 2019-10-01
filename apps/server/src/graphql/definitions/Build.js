@@ -57,7 +57,7 @@ export const typeDefs = gql`
   type SizeDiffReportComparison {
     name: String!
     asset: Asset!
-    baseAsset: Asset!
+    baseAsset: Asset
   }
 
   type SizeDiffReport {

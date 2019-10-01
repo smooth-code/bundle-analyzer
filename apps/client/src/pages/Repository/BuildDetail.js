@@ -4,7 +4,6 @@ import gql from 'graphql-tag'
 import styled, { Box } from '@xstyled/styled-components'
 import { Helmet } from 'react-helmet'
 import filesize from 'filesize'
-// import { useMutation } from '@apollo/react-hooks'
 import {
   Container,
   Card,
@@ -16,7 +15,9 @@ import {
   FadeLink,
 } from 'components'
 import moment from 'moment'
+import loadable from '@loadable/component'
 import { useQuery } from 'containers/Apollo'
+import { StatsLoader } from 'containers/StatsLoader'
 import { FaRegClock } from 'react-icons/fa'
 import { GoGitCommit, GoGitBranch, GoPulse } from 'react-icons/go'
 import { getBuildStatus, getStatusColor } from 'modules/build'
@@ -77,6 +78,7 @@ export const BuildDetailFragment = gql`
     }
     bundle {
       id
+      webpackStatsUrl
       stats {
         assets {
           name
@@ -272,6 +274,10 @@ function SizeDiff({ build, ...props }) {
   )
 }
 
+const LoadableStatsSunburst = loadable(() =>
+  import('containers/StatsSunburst').then(({ StatsSunburst }) => StatsSunburst),
+)
+
 export function Build({ build }) {
   const {
     bundle: { stats },
@@ -401,7 +407,18 @@ export function Build({ build }) {
             <CardStat>{stats.assets.length}</CardStat>
           </Card>
         </Box>
-
+        <Box col={1} p={2}>
+          <Card color="white">
+            <CardHeader>
+              <CardTitle>Modules</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <StatsLoader url={build.bundle.webpackStatsUrl}>
+                {stats => <LoadableStatsSunburst stats={stats} />}
+              </StatsLoader>
+            </CardBody>
+          </Card>
+        </Box>
         <Box col={1} p={2}>
           <Card color="white">
             <CardHeader>
