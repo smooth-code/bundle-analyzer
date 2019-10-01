@@ -1,5 +1,6 @@
 import React from 'react'
-import styled, { Box } from '@xstyled/styled-components'
+import styled from '@xstyled/styled-components'
+import { th } from '@xstyled/system'
 import { Sunburst } from 'react-vis'
 import useDimensions from 'react-use-dimensions'
 import { FileSize } from 'components'
@@ -38,6 +39,12 @@ function getFile(module, fileName, parentTree) {
   }
 }
 
+function getFullName(name) {
+  const nodeModulesIndex = name.indexOf('/node_modules/')
+  if (nodeModulesIndex === -1) return name
+  return name.slice(nodeModulesIndex + 1, name.length)
+}
+
 function buildHierarchy(modules) {
   let maxDepth = 1
 
@@ -61,7 +68,7 @@ function buildHierarchy(modules) {
 
     const mod = {
       id: module.id,
-      fullName: module.name,
+      fullName: getFullName(module.name),
       size: module.size,
       reasons: module.reasons,
     }
@@ -110,36 +117,14 @@ function Label({ node }) {
   const size = getNodeSize(node)
   return (
     <LabelContainer>
-      <div>{node.name}</div>
+      <div>
+        <strong>{node.name}</strong>
+      </div>
       <div>
         <FileSize>{size}</FileSize>
       </div>
     </LabelContainer>
   )
-}
-
-function getKeyPath(node) {
-  if (!node.parent) {
-    return ['root']
-  }
-
-  return [(node.data && node.data.name) || node.name].concat(
-    getKeyPath(node.parent),
-  )
-}
-
-function colorizeData(data, keyPath) {
-  data = { ...data }
-  if (data.children) {
-    data.children = data.children.map(child => colorizeData(child, keyPath))
-  }
-
-  data.style = {
-    ...data.style,
-    fillOpacity: keyPath && !keyPath[data.name] ? 0.2 : 1,
-  }
-
-  return data
 }
 
 const colors = {
@@ -154,47 +139,56 @@ export function getColor(node) {
   if (dotIndex !== -1 && dotIndex !== 0 && dotIndex !== name.length - 1) {
     return colors.file
   }
-  if (node.parent && node.parent.name === 'node_modules') {
+  if (node.parent && node.parent.data.name === 'node_modules') {
     return '#599e59'
   }
 
   return colors[name] || colors.default
 }
 
+const Container = styled.box`
+  position: relative;
+  margin: 0 auto;
+
+  .rv-sunburst__series--radial__arc {
+    stroke: ${th.color('gray800')} !important;
+    stroke-opacity: 1;
+    stroke-width: 1;
+    transition: base;
+    transition-property: opacity;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.5 !important;
+    }
+  }
+`
+
+const MemoSunburst = React.memo(props => <Sunburst {...props} />)
+
 export function StatsSunburst({ stats }) {
   const data = React.useMemo(() => statsToData(stats), [stats])
   const [activeNode, setActiveNode] = React.useState(data)
-  const colorizedData = React.useMemo(() => {
-    if (data === activeNode) return data
-    const path = getKeyPath(activeNode).reverse()
-    const pathAsMap = path.reduce((res, row) => {
-      res[row] = true
-      return res
-    }, {})
-    return colorizeData(data, pathAsMap)
-  }, [data, activeNode])
+  const handleMouseOver = React.useCallback(node => setActiveNode(node), [])
+  const handleMouseOut = React.useCallback(() => setActiveNode(data), [data])
   const [ref, { width, height }] = useDimensions()
   return (
-    <Box ref={ref} height={500} maxWidth={500} position="relative" mx="auto">
+    <Container ref={ref} height={width}>
       {width && height ? (
-        <Sunburst
-          hideRootNode
-          colorType="literal"
-          data={colorizedData}
-          height={height}
-          width={width}
-          style={{
-            stroke: '#ddd',
-            strokeOpacity: 0.3,
-            strokeWidth: '0.5',
-          }}
-          getColor={getColor}
-          onValueMouseOver={node => setActiveNode(node)}
-          onValueMouseOut={() => setActiveNode(data)}
-        >
+        <>
+          <MemoSunburst
+            hideRootNode
+            colorType="literal"
+            data={data}
+            height={height}
+            width={width}
+            getColor={getColor}
+            onValueMouseOver={handleMouseOver}
+            onValueMouseOut={handleMouseOut}
+          />
           {activeNode ? <Label node={activeNode} /> : null}
-        </Sunburst>
+        </>
       ) : null}
-    </Box>
+    </Container>
   )
 }
