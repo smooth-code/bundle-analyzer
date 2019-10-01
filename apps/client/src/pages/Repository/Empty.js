@@ -32,7 +32,7 @@ export function RepositoryEmpty() {
             See{' '}
             <FadeLink
               color="white"
-              href="https://docs.bundle-analyzer.com"
+              href="https://docs.bundle-analyzer.com/docs/quick-start/"
               target="_blanl"
               rel="noopener noreferrer"
             >

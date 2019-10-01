@@ -1,0 +1,51 @@
+---
+menu: Advanced
+title: Size Limit
+order: 20
+---
+
+# Size Limit
+
+It is possible to limit the maximum size of your assets by type and compression. It ensures bundle quality over time.
+
+## Check size
+
+You can add size checks in `files` section of your configuration.
+
+```json
+{
+  "files": [
+    {
+      "test": "*",
+      "maxSize": "250 kB"
+    }
+  ]
+}
+```
+
+A check is composed by threw properties:
+
+- `test`: a glob expression to match assets name
+- `maxSize`: the maximum size of the asset
+- `compression`: the compression used to compare the size (by default "none")
+
+## Check several compressions
+
+To check several compression, just add a rule with a specific compression. The following rule will check all JS file without compression and with "gzip" compression:
+
+```json
+{
+  "files": [
+    {
+      "test": "*.js",
+      "maxSize": "250 kB",
+      "compression": "none"
+    },
+    {
+      "test": "*.js",
+      "maxSize": "10 kB",
+      "compression": "none"
+    }
+  ]
+}
+```

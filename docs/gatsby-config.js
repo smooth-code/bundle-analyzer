@@ -11,7 +11,10 @@ module.exports = {
         siteUrl: 'https://docs.bundle-analyzer.com',
         github: 'https://github.com/smooth-code/bundle-analyzer',
         menu: ['Getting Started', 'Advanced', 'Troubleshooting'],
-        nav: [{ title: 'Docs', url: '/docs/' }],
+        nav: [
+          { title: 'Docs', url: '/docs/' },
+          { title: 'Back to app', url: '/app/' },
+        ],
         theme: {
           colors: {
             primary: '#0a80cc',

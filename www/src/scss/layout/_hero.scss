@@ -172,8 +172,12 @@
 .hero-figure-box-06 {
   left: 65.5%;
   top: 6.3%;
-  width: 30.3%;
-  height: 40.4%;
+  width: 64%;
+  height: 39%;
+  border-radius: 4px;
+  background-image: url('../images/checks.png');
+  background-repeat: no-repeat;
+  background-size: cover;
   transform: rotateZ(20deg);
 }
 

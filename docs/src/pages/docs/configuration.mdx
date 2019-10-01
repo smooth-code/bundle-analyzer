@@ -1,0 +1,59 @@
+---
+menu: Advanced
+title: Configuration
+order: 10
+---
+
+# Configuration
+
+Configuration can be done directly in your project settings or using a project configuration file (recommended).
+
+## Configuration File
+
+A configuration file permits to adjust check in a specific PR or commit, it is more flexible and recommended.
+
+The configuration file has to be in the root of your project, several configuration files are supported:
+
+- A `bundle-analyzer.config.js` file that exports an object (recommended).
+- A `.bundle-analyzerrc` file, written in YAML or JSON, with optional extensions: .yaml/.yml/.json/.js.
+- A "bundle-analyzer" key in your package.json file.
+
+The configuration file will be resolved from the directory you run the command to upload stats.
+
+## Example
+
+**JSON:**
+
+```json
+{
+  "files": [
+    {
+      "test": "*",
+      "maxSize": "250 kB"
+    }
+  ]
+}
+```
+
+**JS:**
+
+```js
+// .bundle-analyzer.config.js
+module.exports = {
+  files: [
+    {
+      test: '*',
+      maxSize: '250 kB',
+    },
+  ],
+}
+```
+
+**YAML:**
+
+```yml
+# bundle-analyzerrc.yml
+files:
+  - test: '*'
+    maxSize: 250 kB
+```
