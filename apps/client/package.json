@@ -5,6 +5,7 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.1",
     "@bundle-analyzer/webpack-plugin": "^0.4.0",
+    "@loadable/component": "^5.10.3",
     "@sentry/browser": "^5.6.3",
     "@smooth-ui/core-sc": "^11.1.1",
     "@xstyled/styled-components": "^1.13.1",
