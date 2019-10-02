@@ -1,6 +1,7 @@
 export * from './AlertBar'
 export * from './Avatar'
 export * from './BrandLogo'
+export * from './Catch'
 export * from './Card'
 export * from './Code'
 export * from './Container'

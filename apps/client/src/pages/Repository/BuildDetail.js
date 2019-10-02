@@ -13,6 +13,7 @@ import {
   CardBody,
   CardTitle,
   FadeLink,
+  Catch,
 } from 'components'
 import moment from 'moment'
 import loadable from '@loadable/component'
@@ -413,9 +414,14 @@ export function Build({ build }) {
               <CardTitle>Modules</CardTitle>
             </CardHeader>
             <CardBody>
-              <StatsLoader url={build.bundle.webpackStatsUrl}>
-                {stats => <LoadableStatsSunburst stats={stats} />}
-              </StatsLoader>
+              <Catch
+                capture={false}
+                fallback="An error occurs during stats loading, please reload the page."
+              >
+                <StatsLoader url={build.bundle.webpackStatsUrl}>
+                  {stats => <LoadableStatsSunburst stats={stats} />}
+                </StatsLoader>
+              </Catch>
             </CardBody>
           </Card>
         </Box>
