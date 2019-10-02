@@ -29,6 +29,7 @@ export class Bundle extends BaseModel {
     return s3.getSignedUrl('getObject', {
       Bucket: config.get('s3.bucket'),
       Key: Bundle.getWebpackStatsPath(bundleId),
+      Expires: 7200,
     })
   }
 
