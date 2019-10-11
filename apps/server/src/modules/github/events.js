@@ -1,8 +1,10 @@
 /* eslint-disable default-case */
 import { synchronizeFromInstallationId } from 'jobs/synchronize'
+import { logger } from 'modules/util'
 import { getOrCreateInstallation } from 'modules/synchronizer/github'
 
 export async function handleGitHubEvents({ name, payload }) {
+  logger.info('GitHub event', name)
   try {
     switch (name) {
       case 'installation_repositories': {
