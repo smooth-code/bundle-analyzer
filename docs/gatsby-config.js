@@ -13,7 +13,7 @@ module.exports = {
         menu: ['Getting Started', 'Advanced', 'Troubleshooting'],
         nav: [
           { title: 'Docs', url: '/docs/' },
-          { title: 'Back to app', url: '/app/' },
+          { title: 'Back to app', url: '//app.bundle-analyzer.com/' },
         ],
         theme: {
           colors: {
