@@ -137,7 +137,7 @@ function SizeCheck() {
         <CardText>
           Default project configuration.
           <FadeLink
-            href="https://docs.bundle-analyzer.com/project-configuration"
+            href="https://docs.bundle-analyzer.com/docs/configuration"
             rel="noopener noreferrer"
             color="white"
           >
